@@ -1,0 +1,47 @@
+# Dependencies
+/vendor
+/node_modules
+
+# Environment files
+/.env
+/.env.*
+!/.env.example
+
+# Storage
+/storage/*.key
+/storage/logs/*
+/storage/framework/cache/*
+/storage/framework/sessions/*
+/storage/framework/views/*
+/storage/pail
+
+# Public
+/public/storage
+/public/build
+/public/hot
+
+# IDE
+/.idea
+/.vscode
+/.fleet
+/.zed
+/.nova
+/.phpactor.json
+
+# Testing
+/.phpunit.cache
+.phpunit.result.cache
+
+# Logs
+*.log
+npm-debug.log
+yarn-error.log
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Laravel
+/auth.json
+Homestead.json
+Homestead.yaml
