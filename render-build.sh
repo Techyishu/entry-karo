@@ -23,6 +23,12 @@ php artisan migrate --force
 echo "🔗 Creating storage symlink..."
 php artisan storage:link || true
 
+# Create super admin (optional - controlled by env var)
+if [ "$CREATE_ADMIN" = "true" ]; then
+    echo "👤 Creating super admin user..."
+    php artisan db:seed --class=SuperAdminSeeder --force
+fi
+
 # Clear and cache config
 echo "⚙️  Optimizing configuration..."
 php artisan config:cache
