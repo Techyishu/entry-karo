@@ -68,9 +68,30 @@
                             <label for="purpose" class="block text-sm font-medium text-gray-700 mb-2">
                                 Purpose of Visit *
                             </label>
-                            <input type="text" id="purpose" name="purpose"
+                            <select id="purpose" name="purpose"
                                 class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
-                                placeholder="Business Meeting, Interview, etc." maxlength="500" required>
+                                required onchange="toggleCustomPurposeReg(this)">
+                                <option value="">Select purpose...</option>
+                                <option value="Meeting">Meeting</option>
+                                <option value="Interview">Interview</option>
+                                <option value="Delivery">Delivery</option>
+                                <option value="Sales Visit">Sales Visit</option>
+                                <option value="Service/Repair">Service/Repair</option>
+                                <option value="Consultation">Consultation</option>
+                                <option value="Personal Visit">Personal Visit</option>
+                                <option value="Official Work">Official Work</option>
+                                <option value="Other">Other (specify below)</option>
+                            </select>
+                        </div>
+
+                        <!-- Custom Purpose (shown when "Other" is selected) -->
+                        <div id="customPurposeFieldReg" class="hidden">
+                            <label for="customPurpose" class="block text-sm font-medium text-gray-700 mb-2">
+                                Please specify purpose *
+                            </label>
+                            <input type="text" id="customPurpose" name="custom_purpose"
+                                class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
+                                placeholder="Enter custom purpose">
                         </div>
 
                         <!-- Vehicle Number -->
@@ -248,44 +269,44 @@
             itemDiv.dataset.itemIndex = itemIndex;
 
             itemDiv.innerHTML = `
-                    <div class="flex justify-between items-start mb-4">
-                        <h3 class="text-sm font-medium text-gray-900">Item ${itemIndex + 1}</h3>
-                        <button type="button" onclick="removeItem(${itemIndex})" class="text-red-600 hover:text-red-900 text-sm font-medium">
-                            Remove
-                        </button>
-                    </div>
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                        <div>
-                            <label class="block text-sm font-medium text-gray-700 mb-2">Item Name *</label>
-                            <input type="text" name="items[${itemIndex}][item_name]" 
-                                class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
-                                placeholder="Laptop, Bag, etc." required>
+                        <div class="flex justify-between items-start mb-4">
+                            <h3 class="text-sm font-medium text-gray-900">Item ${itemIndex + 1}</h3>
+                            <button type="button" onclick="removeItem(${itemIndex})" class="text-red-600 hover:text-red-900 text-sm font-medium">
+                                Remove
+                            </button>
                         </div>
-                        <div>
-                            <label class="block text-sm font-medium text-gray-700 mb-2">Item Type *</label>
-                            <select name="items[${itemIndex}][item_type]" 
-                                class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
-                                required>
-                                <option value="">Select type...</option>
-                                <option value="personal">Personal (Bag, Laptop, Phone)</option>
-                                <option value="office">Office Equipment</option>
-                                <option value="delivery">Delivery (Package, Box)</option>
-                                <option value="other">Other</option>
-                            </select>
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-2">Item Name *</label>
+                                <input type="text" name="items[${itemIndex}][item_name]" 
+                                    class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
+                                    placeholder="Laptop, Bag, etc." required>
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-2">Item Type *</label>
+                                <select name="items[${itemIndex}][item_type]" 
+                                    class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
+                                    required>
+                                    <option value="">Select type...</option>
+                                    <option value="personal">Personal (Bag, Laptop, Phone)</option>
+                                    <option value="office">Office Equipment</option>
+                                    <option value="delivery">Delivery (Package, Box)</option>
+                                    <option value="other">Other</option>
+                                </select>
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-2">Quantity *</label>
+                                <input type="number" name="items[${itemIndex}][quantity]" min="1" value="1"
+                                    class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
+                                    required>
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-2">Item Photo (Optional)</label>
+                                <input type="file" name="items[${itemIndex}][item_photo]" accept=".jpg,.jpeg,.png"
+                                    class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500">
+                            </div>
                         </div>
-                        <div>
-                            <label class="block text-sm font-medium text-gray-700 mb-2">Quantity *</label>
-                            <input type="number" name="items[${itemIndex}][quantity]" min="1" value="1"
-                                class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
-                                required>
-                        </div>
-                        <div>
-                            <label class="block text-sm font-medium text-gray-700 mb-2">Item Photo (Optional)</label>
-                            <input type="file" name="items[${itemIndex}][item_photo]" accept=".jpg,.jpeg,.png"
-                                class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500">
-                        </div>
-                    </div>
-                `;
+                    `;
 
             container.appendChild(itemDiv);
             itemIndex++;
@@ -304,6 +325,21 @@
             }
         };
 
+        // Toggle custom purpose field
+        function toggleCustomPurposeReg(selectElement) {
+            const customPurposeField = document.getElementById('customPurposeFieldReg');
+            const customPurposeInput = document.getElementById('customPurpose');
+            
+            if (selectElement.value === 'Other') {
+                customPurposeField.classList.remove('hidden');
+                customPurposeInput.required = true;
+            } else {
+                customPurposeField.classList.add('hidden');
+                customPurposeInput.required = false;
+                customPurposeInput.value = '';
+            }
+        }
+
         // Form submission
         document.getElementById('registrationForm').addEventListener('submit', async function (e) {
             e.preventDefault();
@@ -317,6 +353,16 @@
             showLoading(true);
 
             const formData = new FormData(e.target);
+            
+            // Handle custom purpose: if "Other" is selected, use custom_purpose value
+            const purposeSelect = document.getElementById('purpose').value;
+            const customPurpose = document.getElementById('customPurpose').value;
+            
+            if (purposeSelect === 'Other' && customPurpose) {
+                formData.set('purpose', customPurpose);
+                formData.delete('custom_purpose');
+            }
+            
             formData.append('auto_checkin', '1');
 
             try {

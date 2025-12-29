@@ -321,8 +321,8 @@
         const activeEntryId = {{ $activeEntry ? $activeEntry->id : 'null' }};
 
         function checkOutActiveVisitor(entryId) {
-            if (!activeEntryId) {
-                showMessage('No active entry to check out.', 'error');
+            if (!entryId) {
+                showMessage('Error', 'No active entry to check out.');
                 return;
             }
 
@@ -340,7 +340,12 @@
                 },
                 body: JSON.stringify({ entry_id: entryId })
             })
-                .then(response => response.json())
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error(`HTTP error! status: ${response.status}`);
+                    }
+                    return response.json();
+                })
                 .then(data => {
                     if (data.success) {
                         const duration = data.entry.duration_minutes;
@@ -356,7 +361,7 @@
                 })
                 .catch(error => {
                     showMessage('Error', 'Error checking out visitor. Please try again.');
-                    console.error(error);
+                    console.error('Checkout error:', error);
                 })
                 .finally(() => {
                     showLoading(false);

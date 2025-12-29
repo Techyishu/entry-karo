@@ -154,42 +154,95 @@ class EntryController
      */
     public function checkOut(Request $request)
     {
-        $request->validate([
-            'entry_id' => 'required|exists:entries,id',
-        ]);
+        try {
+            \Log::info('Checkout attempt', ['entry_id' => $request->entry_id, 'user_id' => Auth::id()]);
 
-        $guard = Auth::user();
+            $request->validate([
+                'entry_id' => 'required|exists:entries,id',
+            ]);
 
-        $entry = Entry::where('id', $request->entry_id)
-            ->where('guard_id', $guard->id)
-            ->firstOrFail();
+            $guard = Auth::user();
 
-        // Verify this entry belongs to this guard and is not already checked out
-        if ($entry->out_time) {
+            if (!$guard) {
+                \Log::error('Checkout failed: No authenticated user');
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Authentication required.',
+                ], 401);
+            }
+
+            $entry = Entry::where('id', $request->entry_id)
+                ->where('guard_id', $guard->id)
+                ->first();
+
+            if (!$entry) {
+                \Log::warning('Checkout failed: Entry not found or unauthorized', [
+                    'entry_id' => $request->entry_id,
+                    'guard_id' => $guard->id
+                ]);
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Entry not found or you do not have permission to check out this visitor.',
+                ], 404);
+            }
+
+            // Verify this entry is not already checked out
+            if ($entry->out_time) {
+                \Log::info('Checkout attempted on already checked out entry', ['entry_id' => $entry->id]);
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Visitor has already been checked out.',
+                ], 400);
+            }
+
+            // Update entry with out time
+            $entry->out_time = now();
+
+            // Calculate duration in minutes
+            $entry->duration_minutes = $entry->in_time->diffInMinutes($entry->out_time);
+
+            // Mark all carry items as taken out (only those brought in)
+            $itemsUpdated = $entry->carryItems()->where('in_status', true)->update([
+                'out_status' => true,
+            ]);
+
+            \Log::info('Updated carry items on checkout', ['entry_id' => $entry->id, 'items_updated' => $itemsUpdated]);
+
+            $entry->save();
+
+            \Log::info('Checkout successful', [
+                'entry_id' => $entry->id,
+                'duration_minutes' => $entry->duration_minutes
+            ]);
+
+            return response()->json([
+                'success' => true,
+                'message' => 'Visitor checked out successfully. All carry items marked as taken out.',
+                'entry' => $entry->load('visitor', 'carryItems'),
+            ]);
+
+        } catch (\Illuminate\Validation\ValidationException $e) {
+            \Log::error('Checkout validation failed', ['errors' => $e->errors()]);
             return response()->json([
                 'success' => false,
-                'message' => 'Visitor has already been checked out.',
-            ], 400);
+                'message' => 'Validation failed.',
+                'errors' => $e->errors(),
+            ], 422);
+
+        } catch (\Exception $e) {
+            \Log::error('Checkout exception', [
+                'message' => $e->getMessage(),
+                'file' => $e->getFile(),
+                'line' => $e->getLine(),
+                'trace' => $e->getTraceAsString()
+            ]);
+
+            return response()->json([
+                'success' => false,
+                'message' => 'An error occurred during checkout. Please try again.',
+                'error' => app()->environment('local') ? $e->getMessage() : null,
+            ], 500);
         }
-
-        // Update entry with out time
-        $entry->out_time = now();
-
-        // Calculate duration in minutes
-        $entry->duration_minutes = $entry->in_time->diffInMinutes($entry->out_time);
-
-        // Mark all carry items as taken out (only those brought in)
-        $entry->carryItems()->where('in_status', true)->update([
-            'out_status' => true,
-        ]);
-
-        $entry->save();
-
-        return response()->json([
-            'success' => true,
-            'message' => 'Visitor checked out successfully. All carry items marked as taken out.',
-            'entry' => $entry->load('visitor', 'carryItems'),
-        ]);
     }
 
     /**

@@ -140,11 +140,14 @@ Route::middleware('auth')->group(function () {
             // Check-in visitor
             Route::post('/check-in', [GuardEntryController::class, 'checkIn'])->name('guard.entries.check-in');
 
-            // Check-out visitor
+            // Check-out visitor (MUST be before /{entry} route)
             Route::post('/check-out', [GuardEntryController::class, 'checkOut'])->name('guard.entries.check-out');
 
-            // Entry details
-            Route::get('/{entry}', [GuardEntryController::class, 'showEntryDetails'])->name('guard.entries.show');
+            // Entry details - MUST BE LAST because it uses wildcard {entry}
+            // Constrain to numeric IDs only to prevent matching routes like /check-out
+            Route::get('/{entry}', [GuardEntryController::class, 'showEntryDetails'])
+                ->where('entry', '[[0-9]+')
+                ->name('guard.entries.show');
         });
 
         // Carry Items Management

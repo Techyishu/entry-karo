@@ -108,11 +108,31 @@
 
                     <div>
                         <label for="regPurpose" class="block text-sm font-medium text-gray-700 mb-2">
-                            Purpose *
+                            Purpose of Visit *
                         </label>
-                        <textarea id="regPurpose" name="purpose" rows="3"
+                        <select id="regPurpose" name="purpose"
                             class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
-                            required></textarea>
+                            required onchange="toggleCustomPurpose(this)">
+                            <option value="">Select purpose...</option>
+                            <option value="Meeting">Meeting</option>
+                            <option value="Interview">Interview</option>
+                            <option value="Delivery">Delivery</option>
+                            <option value="Sales Visit">Sales Visit</option>
+                            <option value="Service/Repair">Service/Repair</option>
+                            <option value="Consultation">Consultation</option>
+                            <option value="Personal Visit">Personal Visit</option>
+                            <option value="Official Work">Official Work</option>
+                            <option value="Other">Other (specify below)</option>
+                        </select>
+                    </div>
+
+                    <div id="customPurposeField" class="hidden">
+                        <label for="regCustomPurpose" class="block text-sm font-medium text-gray-700 mb-2">
+                            Please specify purpose *
+                        </label>
+                        <input type="text" id="regCustomPurpose" name="custom_purpose"
+                            class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
+                            placeholder="Enter custom purpose">
                     </div>
 
                     <div>
@@ -122,15 +142,6 @@
                         <input type="text" id="regVehicleNumber" name="vehicle_number"
                             class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
                             placeholder="MH XX XX XXXX">
-                    </div>
-
-                    <div>
-                        <label for="regPurposeField" class="block text-sm font-medium text-gray-700 mb-2">
-                            Purpose of Visit *
-                        </label>
-                        <input type="text" id="regPurposeField" name="visit_purpose"
-                            class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
-                            required>
                     </div>
 
                     <div>
@@ -344,6 +355,21 @@
             }
         });
 
+        // Toggle custom purpose field
+        function toggleCustomPurpose(selectElement) {
+            const customPurposeField = document.getElementById('customPurposeField');
+            const customPurposeInput = document.getElementById('regCustomPurpose');
+            
+            if (selectElement.value === 'Other') {
+                customPurposeField.classList.remove('hidden');
+                customPurposeInput.required = true;
+            } else {
+                customPurposeField.classList.add('hidden');
+                customPurposeInput.required = false;
+                customPurposeInput.value = '';
+            }
+        }
+
         // Register visitor functionality
         document.getElementById('registrationForm').addEventListener('submit', async function (e) {
             e.preventDefault();
@@ -352,6 +378,16 @@
 
             try {
                 const formData = new FormData(e.target);
+                
+                // Handle custom purpose: if "Other" is selected, use custom_purpose value
+                const purposeSelect = document.getElementById('regPurpose').value;
+                const customPurpose = document.getElementById('regCustomPurpose').value;
+                
+                if (purposeSelect === 'Other' && customPurpose) {
+                    formData.set('purpose', customPurpose);
+                    formData.delete('custom_purpose');
+                }
+                
                 formData.append('_token', '{{ csrf_token() }}');
 
                 const response = await fetch('{{ route('guard.entries.visitor.register') }}', {
