@@ -198,8 +198,8 @@ class EntryController
             // Update entry with out time
             $entry->out_time = now();
 
-            // Calculate duration in minutes
-            $entry->duration_minutes = $entry->in_time->diffInMinutes($entry->out_time);
+            // Calculate duration in minutes and round to integer
+            $entry->duration_minutes = (int) round($entry->in_time->diffInMinutes($entry->out_time));
 
             // Mark all carry items as taken out (only those brought in)
             $itemsUpdated = $entry->carryItems()->where('in_status', true)->update([
