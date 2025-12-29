@@ -19,6 +19,12 @@ if [ "$CREATE_ADMIN" = "true" ]; then
     php artisan db:seed --class=SuperAdminSeeder --force
 fi
 
+# Create test customer (optional - controlled by env var)
+if [ "$CREATE_TEST_CUSTOMER" = "true" ]; then
+    echo "👤 Creating test customer..."
+    php artisan db:seed --class=TestCustomerSeeder --force
+fi
+
 # Clear and cache config
 echo "⚙️  Optimizing configuration..."
 php artisan config:cache

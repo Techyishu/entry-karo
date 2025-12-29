@@ -44,6 +44,18 @@ COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
 # Install application dependencies
 RUN composer install --no-dev --optimize-autoloader --no-interaction
 
+# Install Node.js for building frontend assets
+RUN curl -fsSL https://deb.nodesource.com/setup_20.x | bash - \
+    && apt-get install -y nodejs \
+    && npm install -g npm@latest
+
+# Copy package files and install Node dependencies
+COPY package*.json ./
+RUN npm install
+
+# Build frontend assets
+RUN npm run build
+
 # Set permissions for Laravel
 RUN chown -R www-data:www-data /var/www/html \
     && chmod -R 755 /var/www/html/storage \
