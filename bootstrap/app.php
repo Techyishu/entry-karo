@@ -40,6 +40,16 @@ return Application::configure(basePath: dirname(__DIR__))
             // Permission middleware
             'can_delete_entry' => \App\Http\Middleware\CanDeleteEntry::class,
         ]);
+
+        // Trust all proxies for Render (and other cloud platforms)
+        $middleware->trustProxies(
+            at: '*',
+            headers: \Symfony\Component\HttpFoundation\Request::HEADER_X_FORWARDED_FOR |
+            \Symfony\Component\HttpFoundation\Request::HEADER_X_FORWARDED_HOST |
+            \Symfony\Component\HttpFoundation\Request::HEADER_X_FORWARDED_PORT |
+            \Symfony\Component\HttpFoundation\Request::HEADER_X_FORWARDED_PROTO |
+            \Symfony\Component\HttpFoundation\Request::HEADER_X_FORWARDED_AWS_ELB
+        );
     })
     ->withExceptions(function (Exceptions $exceptions): void {
         //
