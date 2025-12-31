@@ -278,28 +278,60 @@ class EntryController
      */
     public function registerVisitor(Request $request)
     {
-        $request->validate([
-            'mobile_number' => 'required|string|unique:visitors,mobile_number|max:15',
-            'name' => 'required|string|max:255',
-            'address' => 'required|string|max:500',
-            'purpose' => 'required|string|max:500',
-            'vehicle_number' => 'nullable|string|max:50',
-            'photo' => 'required|file|mimes:jpeg,png,jpg|max:2048', // Max 2MB, JPG/PNG only
-            'auto_checkin' => 'boolean',
-            'items' => 'nullable|array',
-            'items.*.item_name' => 'required|string|max:255',
-            'items.*.item_type' => 'required|in:personal,office,delivery,other',
-            'items.*.quantity' => 'required|integer|min:1',
-            'items.*.item_photo' => 'nullable|file|mimes:jpeg,png,jpg|max:2048',
-        ], [
-            'photo.max' => 'Visitor photo must not exceed 2MB.',
-            'photo.mimes' => 'Visitor photo must be a JPG or PNG image.',
-        ]);
+        try {
+            \Log::info('=== VISITOR REGISTRATION ATTEMPT ===', [
+                'guard_id' => Auth::id(),
+                'mobile_number' => $request->mobile_number,
+                'has_photo' => $request->hasFile('photo'),
+                'photo_size' => $request->hasFile('photo') ? $request->file('photo')->getSize() : null,
+                'all_fields' => $request->except(['photo', '_token']),
+            ]);
 
-        $guard = Auth::user();
+            $request->validate([
+                'mobile_number' => 'required|string|unique:visitors,mobile_number|max:15',
+                'name' => 'required|string|max:255',
+                'address' => 'required|string|max:500',
+                'purpose' => 'required|string|max:500',
+                'vehicle_number' => 'nullable|string|max:50',
+                'photo' => 'nullable|image|max:10240', // Accept any image type, max 10MB
+                'auto_checkin' => 'boolean',
+                'items' => 'nullable|array',
+                'items.*.item_name' => 'required|string|max:255',
+                'items.*.item_type' => 'required|in:personal,office,delivery,other',
+                'items.*.quantity' => 'required|integer|min:1',
+                'items.*.item_photo' => 'nullable|image|max:10240',
+            ], [
+                'photo.max' => 'Visitor photo must not exceed 10MB.',
+                'photo.image' => 'Visitor photo must be an image file.',
+            ]);
+
+            \Log::info('Validation passed');
+
+            $guard = Auth::user();
+        } catch (\Illuminate\Validation\ValidationException $e) {
+            \Log::error('Registration validation failed', [
+                'errors' => $e->errors(),
+                'mobile_number' => $request->mobile_number,
+            ]);
+            throw $e;
+        } catch (\Exception $e) {
+            \Log::error('Registration error during initial validation', [
+                'error' => $e->getMessage(),
+                'trace' => $e->getTraceAsString(),
+            ]);
+            throw $e;
+        }
+
+        $photoPath = null;
 
         // Store visitor photo in storage/app/public/visitors
         if ($request->hasFile('photo')) {
+            \Log::info('Processing photo upload', [
+                'original_name' => $request->file('photo')->getClientOriginalName(),
+                'size' => $request->file('photo')->getSize(),
+                'mime' => $request->file('photo')->getMimeType(),
+            ]);
+
             $photo = $request->file('photo');
 
             // Generate unique filename: mobile_number_timestamp.ext
@@ -307,29 +339,45 @@ class EntryController
 
             // Store photo in storage/app/public/visitors
             $photoPath = $photo->storeAs('visitors', $fileName, 'public');
+
+            \Log::info('Photo uploaded successfully', ['path' => $photoPath]);
         } else {
-            // This should not happen due to 'required' validation
-            return response()->json([
-                'success' => false,
-                'message' => 'Visitor photo is required.',
-            ], 400);
+            \Log::info('No photo uploaded');
         }
 
         // Create visitor
-        $visitor = Visitor::create([
-            'mobile_number' => $request->mobile_number,
-            'name' => $request->name,
-            'address' => $request->address,
-            'purpose' => $request->purpose,
-            'vehicle_number' => $request->vehicle_number,
-            'photo_path' => $photoPath,
-        ]);
+        try {
+            \Log::info('Creating visitor record', [
+                'mobile_number' => $request->mobile_number,
+                'name' => $request->name,
+                'has_photo' => !is_null($photoPath),
+            ]);
+
+            $visitor = Visitor::create([
+                'mobile_number' => $request->mobile_number,
+                'name' => $request->name,
+                'address' => $request->address,
+                'purpose' => $request->purpose,
+                'vehicle_number' => $request->vehicle_number,
+                'photo_path' => $photoPath,
+            ]);
+
+            \Log::info('Visitor created successfully', ['visitor_id' => $visitor->id]);
+        } catch (\Exception $e) {
+            \Log::error('Failed to create visitor', [
+                'error' => $e->getMessage(),
+                'trace' => $e->getTraceAsString(),
+            ]);
+            throw $e;
+        }
 
         $entry = null;
         $items = [];
 
         // Auto check-in if requested
         if ($request->boolean('auto_checkin', true)) {
+            \Log::info('Auto check-in enabled, creating entry');
+
             $entry = Entry::create([
                 'visitor_id' => $visitor->id,
                 'guard_id' => $guard->id,
@@ -338,8 +386,12 @@ class EntryController
                 'duration_minutes' => null,
             ]);
 
+            \Log::info('Entry created', ['entry_id' => $entry->id]);
+
             // Add carry items if provided
             if ($request->has('items') && is_array($request->items)) {
+                \Log::info('Processing carry items', ['count' => count($request->items)]);
+
                 foreach ($request->items as $index => $itemData) {
                     $itemPhotoPath = null;
 
@@ -360,8 +412,16 @@ class EntryController
 
                     $items[] = $item;
                 }
+
+                \Log::info('Carry items created', ['count' => count($items)]);
             }
         }
+
+        \Log::info('=== REGISTRATION COMPLETED SUCCESSFULLY ===', [
+            'visitor_id' => $visitor->id,
+            'entry_id' => $entry ? $entry->id : null,
+            'items_count' => count($items),
+        ]);
 
         return response()->json([
             'success' => true,
@@ -384,7 +444,7 @@ class EntryController
             'item_name' => 'required|string|max:255',
             'item_type' => 'required|in:personal,office,delivery,other',
             'quantity' => 'required|integer|min:1',
-            'item_photo' => 'nullable|image|mimes:jpeg,jpg,png|max:2048',
+            'item_photo' => 'nullable|image|mimes:jpeg,jpg,png|max:10240',
             'in_status' => 'nullable',
         ]);
 

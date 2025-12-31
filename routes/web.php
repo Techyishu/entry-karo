@@ -28,6 +28,8 @@ Route::get('/', function () {
 Route::middleware('guest')->group(function () {
     Route::get('/login', [LoginController::class, 'showLoginForm'])->name('login');
     Route::post('/login', [LoginController::class, 'login'])->name('login.post');
+    Route::get('/register', [\App\Http\Controllers\Auth\RegistrationController::class, 'create'])->name('register');
+    Route::post('/register', [\App\Http\Controllers\Auth\RegistrationController::class, 'store'])->name('register.post');
 });
 
 // Protected routes (require authentication)
@@ -85,6 +87,14 @@ Route::middleware('auth')->group(function () {
             Route::get('/{entry}/confirm-delete', [AdminEntryController::class, 'confirmDelete'])->name('admin.entries.confirm-delete');
             Route::delete('/{entry}', [AdminEntryController::class, 'destroy'])->name('admin.entries.destroy');
         });
+
+        // Subscription Management
+        Route::prefix('customer')->group(function () {
+            Route::get('/{customer}/details', [\App\Http\Controllers\Admin\SubscriptionController::class, 'show'])->name('admin.customer.show');
+            Route::post('/{customer}/subscription/assign', [\App\Http\Controllers\Admin\SubscriptionController::class, 'assign'])->name('admin.subscription.assign');
+            Route::patch('/subscription/{subscription}/status', [\App\Http\Controllers\Admin\SubscriptionController::class, 'updateStatus'])->name('admin.subscription.update-status');
+            Route::delete('/subscription/{subscription}', [\App\Http\Controllers\Admin\SubscriptionController::class, 'destroy'])->name('admin.subscription.destroy');
+        });
     });
 
     /*
@@ -110,8 +120,8 @@ Route::middleware('auth')->group(function () {
 
         // Entry Viewing (Customer can only view, not delete)
         Route::prefix('entries')->group(function () {
-            Route::get('/', fn() => 'Customer Entries Index')->name('customer.entries.index');
-            Route::get('/{entry}', fn() => 'Customer Entries Show')->name('customer.entries.show');
+            Route::get('/', [\App\Http\Controllers\Customer\EntryController::class, 'index'])->name('customer.entries.index');
+            Route::get('/{entry}', [\App\Http\Controllers\Customer\EntryController::class, 'show'])->name('customer.entries.show');
             // NOTE: Delete route intentionally omitted - customers cannot delete entries
         });
     });
@@ -157,3 +167,11 @@ Route::middleware('auth')->group(function () {
         });
     });
 });
+
+// --- HOSTINGER DEPLOYMENT HELPER ---
+// Uncomment the route below to set up storage links and clear cache on shared hosting
+// Route::get('/setup-hostinger', function () {
+//     \Illuminate\Support\Facades\Artisan::call('storage:link');
+//     \Illuminate\Support\Facades\Artisan::call('optimize:clear');
+//     return 'Storage Linked and Cache Cleared! You can now delete this route.';
+// });

@@ -36,13 +36,16 @@
                         <thead class="bg-gray-50">
                             <tr>
                                 <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                    Name
+                                    Customer
                                 </th>
                                 <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                                     Email
                                 </th>
                                 <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                    Status
+                                    Guards
+                                </th>
+                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                    Subscription
                                 </th>
                                 <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                                     Registered
@@ -54,6 +57,9 @@
                         </thead>
                         <tbody class="bg-white divide-y divide-gray-200">
                             @forelse($customers as $customer)
+                                @php
+                                    $activeSubscription = $customer->subscriptions->where('status', 'active')->first();
+                                @endphp
                                 <tr class="hover:bg-gray-50">
                                     <td class="px-6 py-4 whitespace-nowrap">
                                         <div class="flex items-center">
@@ -62,29 +68,48 @@
                                                 <span
                                                     class="text-green-600 font-medium">{{ substr($customer->name, 0, 1) }}</span>
                                             </div>
-                                            <p class="font-medium text-gray-900">{{ $customer->name }}</p>
+                                            <div>
+                                                <p class="font-medium text-gray-900">{{ $customer->name }}</p>
+                                                <p class="text-xs text-gray-500">ID: {{ $customer->id }}</p>
+                                            </div>
                                         </div>
                                     </td>
                                     <td class="px-6 py-4 whitespace-nowrap">
                                         <p class="text-gray-900">{{ $customer->email }}</p>
                                     </td>
                                     <td class="px-6 py-4 whitespace-nowrap">
-                                        <span class="px-2 py-1 text-xs rounded-full bg-green-100 text-green-800">
-                                            Active
+                                        <span class="px-2 py-1 text-xs rounded-full bg-blue-100 text-blue-800 font-medium">
+                                            {{ $customer->guards->count() }} Guards
                                         </span>
+                                    </td>
+                                    <td class="px-6 py-4 whitespace-nowrap">
+                                        @if($activeSubscription)
+                                            <div>
+                                                <p class="text-sm font-medium text-gray-900">{{ $activeSubscription->plan->name }}</p>
+                                                <p class="text-xs text-gray-500">₹{{ number_format($activeSubscription->amount, 2) }}/{{ $activeSubscription->billing_cycle }}</p>
+                                            </div>
+                                        @else
+                                            <span class="px-2 py-1 text-xs rounded-full bg-gray-100 text-gray-600">
+                                                No Active Plan
+                                            </span>
+                                        @endif
                                     </td>
                                     <td class="px-6 py-4 whitespace-nowrap">
                                         <p class="text-sm text-gray-600">{{ $customer->created_at->format('M d, Y') }}</p>
                                         <p class="text-xs text-gray-500">{{ $customer->created_at->diffForHumans() }}</p>
                                     </td>
-                                    <td class="px-6 py-4 whitespace-nowrap text-right">
+                                    <td class="px-6 py-4 whitespace-nowrap text-right space-x-2">
+                                        <a href="{{ route('admin.customer.show', $customer) }}"
+                                            class="inline-block px-3 py-1 bg-blue-600 text-white text-xs rounded hover:bg-blue-700">
+                                            📋 View Details
+                                        </a>
                                         <form action="{{ route('admin.customers.delete', $customer) }}" method="POST"
                                             class="inline"
                                             onsubmit="return confirm('Are you sure you want to delete this customer account?');">
                                             @csrf
                                             @method('DELETE')
                                             <button type="submit" class="text-red-600 hover:text-red-900 font-medium text-sm">
-                                                🗑️ Delete
+                                                🗑️ 
                                             </button>
                                         </form>
                                     </td>

@@ -115,6 +115,34 @@ class User extends Authenticatable
     }
 
     /**
+     * Get all subscriptions for this customer.
+     */
+    public function subscriptions(): HasMany
+    {
+        return $this->hasMany(Subscription::class);
+    }
+
+    /**
+     * Get the active subscription for this customer.
+     */
+    public function activeSubscription()
+    {
+        return $this->hasMany(Subscription::class)
+            ->where('status', 'active')
+            ->latest()
+            ->first();
+    }
+
+    /**
+     * Check if customer has an active subscription.
+     */
+    public function hasActiveSubscription(): bool
+    {
+        return $this->subscriptions()->where('status', 'active')->exists();
+    }
+
+
+    /**
      * Check if user can delete entries.
      * Only super admin can delete entries.
      */

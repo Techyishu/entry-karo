@@ -29,6 +29,19 @@ class DashboardController extends Controller
             'today_visitors' => Entry::whereDate('in_time', today())->distinct('visitor_id')->count('visitor_id'),
         ];
 
+        // Get subscription statistics
+        $activeSubscriptions = \App\Models\Subscription::where('status', 'active')->get();
+        $mrr = $activeSubscriptions->where('billing_cycle', 'monthly')->sum('amount');
+        $yearlyRevenue = $activeSubscriptions->where('billing_cycle', 'yearly')->sum('amount');
+        $arr = ($mrr * 12) + $yearlyRevenue;
+
+        $subscriptionStats = [
+            'active_subscriptions' => $activeSubscriptions->count(),
+            'mrr' => $mrr,
+            'arr' => $arr,
+            'total_revenue' => \App\Models\Subscription::whereIn('status', ['active', 'cancelled', 'expired'])->sum('amount'),
+        ];
+
         // Get recent entries
         $recentEntries = Entry::with(['visitor', 'guardUser'])
             ->latest('in_time')
@@ -40,7 +53,7 @@ class DashboardController extends Controller
             ->limit(10)
             ->get();
 
-        return view('admin.dashboard', compact('user', 'stats', 'recentEntries', 'recentVisitors'));
+        return view('admin.dashboard', compact('user', 'stats', 'subscriptionStats', 'recentEntries', 'recentVisitors'));
     }
 
     /**
@@ -57,8 +70,19 @@ class DashboardController extends Controller
      */
     public function customers()
     {
-        $customers = User::where('role', 'customer')->latest()->paginate(20);
-        return view('admin.customers', compact('customers'));
+        $customers = User::where('role', 'customer')
+            ->with([
+                'subscriptions' => function ($query) {
+                    $query->with('plan')->latest();
+                },
+                'guards'
+            ])
+            ->latest()
+            ->paginate(20);
+
+        $subscriptionPlans = \App\Models\SubscriptionPlan::where('is_active', true)->get();
+
+        return view('admin.customers', compact('customers', 'subscriptionPlans'));
     }
 
     /**

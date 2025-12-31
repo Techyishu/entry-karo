@@ -24,7 +24,7 @@ class GuardController extends Controller
             ->orderBy('name')
             ->get();
 
-        return view('customer.dashboard', compact('customer', 'guards'));
+        return view('customer.guards.index', compact('customer', 'guards'));
     }
 
     /**
