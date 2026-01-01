@@ -87,6 +87,17 @@
                             <p class="text-xs text-gray-500 uppercase font-semibold tracking-wide mb-1">Address</p>
                             <p class="text-sm text-gray-900">{{ $entry->visitor->address ?? 'N/A' }}</p>
                         </div>
+                        <div>
+                            <p class="text-xs text-gray-500 uppercase font-semibold tracking-wide mb-1">Visited Location</p>
+                            <p class="text-sm text-gray-900">
+                                <span class="font-semibold">{{ Auth::user()->name }}</span>
+                                @if(Auth::user()->organization_type)
+                                    <span class="ml-2 px-2 py-1 bg-green-100 text-green-700 rounded text-xs font-medium">
+                                        {{ ucfirst(str_replace('_', ' ', Auth::user()->organization_type)) }}
+                                    </span>
+                                @endif
+                            </p>
+                        </div>
                         @if ($entry->visitor->vehicle_number)
                             <div>
                                 <p class="text-xs text-gray-500 uppercase font-semibold tracking-wide mb-1">Vehicle</p>

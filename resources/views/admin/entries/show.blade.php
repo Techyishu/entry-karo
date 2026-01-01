@@ -63,6 +63,21 @@
                             <p class="text-sm text-gray-500">Purpose:</p>
                             <p class="text-gray-900">{{ $entry->visitor->purpose }}</p>
                         </div>
+                        <div>
+                            <p class="text-sm text-gray-500">Visited Location:</p>
+                            <p class="text-gray-900">
+                                <span
+                                    class="font-semibold">{{ $entry->guardUser->customer->name ?? $entry->guardUser->name }}</span>
+                                @php
+                                    $customer = $entry->guardUser->customer ?? $entry->guardUser;
+                                @endphp
+                                @if($customer->organization_type)
+                                    <span class="ml-2 px-2 py-1 bg-green-100 text-green-700 rounded text-xs font-medium">
+                                        {{ ucfirst(str_replace('_', ' ', $customer->organization_type)) }}
+                                    </span>
+                                @endif
+                            </p>
+                        </div>
                         @if ($entry->visitor->vehicle_number)
                             <div>
                                 <p class="text-sm text-gray-500">Vehicle Number:</p>
