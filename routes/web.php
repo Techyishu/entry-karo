@@ -168,6 +168,15 @@ Route::middleware('auth')->group(function () {
     });
 });
 
+/*
+|--------------------------------------------------------------------------
+| API Routes (Visitor Search)
+|--------------------------------------------------------------------------
+*/
+Route::prefix('api')->middleware('auth')->group(function () {
+    Route::get('/visitors/search', [GuardEntryController::class, 'searchVisitorByMobile'])->name('api.visitors.search');
+});
+
 // --- HOSTINGER DEPLOYMENT HELPER ---
 // Uncomment the route below to set up storage links and clear cache on shared hosting
 // Route::get('/setup-hostinger', function () {

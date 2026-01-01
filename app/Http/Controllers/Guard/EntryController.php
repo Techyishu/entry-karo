@@ -515,4 +515,46 @@ class EntryController
             'item' => $carryItem->load('entry'),
         ]);
     }
+
+    /**
+     * Search for visitor by mobile number and return their details with location history.
+     */
+    public function searchVisitorByMobile(Request $request)
+    {
+        $mobileNumber = $request->input('mobile');
+
+        if (!$mobileNumber) {
+            return response()->json([
+                'found' => false,
+                'message' => 'Mobile number is required'
+            ], 400);
+        }
+
+        $visitor = Visitor::where('mobile_number', $mobileNumber)->first();
+
+        if (!$visitor) {
+            return response()->json([
+                'found' => false,
+                'message' => 'No visitor found with this mobile number'
+            ]);
+        }
+
+        // Get visitor's location history using the new method
+        $locationHistory = $visitor->getLocationHistory();
+
+        return response()->json([
+            'found' => true,
+            'visitor' => [
+                'id' => $visitor->id,
+                'mobile_number' => $visitor->mobile_number,
+                'name' => $visitor->name,
+                'address' => $visitor->address,
+                'purpose' => $visitor->purpose,
+                'vehicle_number' => $visitor->vehicle_number,
+                'photo_path' => $visitor->photo_path,
+            ],
+            'history' => $locationHistory,
+            'unique_locations' => $visitor->getUniqueLocationsCount(),
+        ]);
+    }
 }

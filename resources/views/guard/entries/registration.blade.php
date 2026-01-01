@@ -37,10 +37,25 @@
                             <label for="mobile_number" class="block text-sm font-medium text-gray-700 mb-2">
                                 Mobile Number *
                             </label>
-                            <input type="text" id="mobile_number" name="mobile_number"
-                                class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
-                                placeholder="+91 XXXXX XXXXX" maxlength="15" required autofocus>
-                            <p class="mt-1 text-xs text-gray-500">This will be the permanent visitor ID</p>
+                            <div class="flex gap-2">
+                                <input type="text" id="mobile_number" name="mobile_number"
+                                    class="flex-1 px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
+                                    placeholder="+91 XXXXX XXXXX" maxlength="15" required autofocus>
+                                <button type="button" id="searchVisitorBtn"
+                                    class="px-4 py-2 bg-green-600 text-white rounded-md hover:bg-green-700 focus:outline-none text-sm font-medium whitespace-nowrap">
+                                    🔍 Search
+                                </button>
+                            </div>
+                            <p class="mt-1 text-xs text-gray-500">Search existing visitor or enter new mobile number</p>
+                        </div>
+
+                        <!-- Visitor History Display (Hidden by default) -->
+                        <div id="visitorHistory"
+                            class="hidden md:col-span-2 bg-green-50 border border-green-200 rounded-lg p-4">
+                            <h3 class="text-sm font-semibold text-green-900 mb-3">✅ Visitor Found - Previous Visits</h3>
+                            <div id="historyContent" class="space-y-2">
+                                <!-- Will be populated via JS -->
+                            </div>
                         </div>
 
                         <!-- Name -->
@@ -107,7 +122,8 @@
                         <!-- Photo Upload -->
                         <div class="md:col-span-2">
                             <label for="photo" class="block text-sm font-medium text-gray-700 mb-2">
-                                Visitor Photo * <span class="text-xs text-gray-500">(Required - Max 2MB, JPG/PNG)</span>
+                                Visitor Photo * <span class="text-xs text-gray-500">(Required - Max 2MB,
+                                    JPG/PNG)</span>
                             </label>
                             <div class="mt-2">
                                 <div id="photoPreviewContainer" class="hidden mb-4">
@@ -251,6 +267,101 @@
             photoError.classList.add('hidden');
         }
 
+        // Visitor Search by Mobile Number
+        document.getElementById('searchVisitorBtn').addEventListener('click', async () => {
+            const mobileNumber = document.getElementById('mobile_number').value.trim();
+
+            if (!mobileNumber) {
+                showAlert('Error', 'Please enter a mobile number to search');
+                return;
+            }
+
+            const searchBtn = document.getElementById('searchVisitorBtn');
+            searchBtn.disabled = true;
+            searchBtn.innerHTML = '⏳ Searching...';
+
+            try {
+                const response = await fetch(`/api/visitors/search?mobile=${encodeURIComponent(mobileNumber)}`, {
+                    headers: {
+                        'Accept': 'application/json',
+                        'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]')?.content
+                    }
+                });
+
+                const data = await response.json();
+
+                if (response.ok && data.found) {
+                    // Auto-fill visitor details
+                    document.getElementById('name').value = data.visitor.name || '';
+                    document.getElementById('address').value = data.visitor.address || '';
+                    if (data.visitor.vehicle_number) {
+                        document.getElementById('vehicle_number').value = data.visitor.vehicle_number;
+                    }
+
+                    // Show visitor history
+                    displayVisitorHistory(data.visitor, data.history);
+                } else {
+                    // Hide history if not found
+                    document.getElementById('visitorHistory').classList.add('hidden');
+                    showAlert('Info', 'No existing visitor found. You can register as new visitor.');
+                }
+            } catch (error) {
+                console.error(error);
+                showAlert('Error', 'Search failed. Please try again.');
+            } finally {
+                searchBtn.disabled = false;
+                searchBtn.innerHTML = '🔍 Search';
+            }
+        });
+
+        function displayVisitorHistory(visitor, history) {
+            const historyDiv = document.getElementById('visitorHistory');
+            const historyContent = document.getElementById('historyContent');
+
+            if (!history || history.length === 0) {
+                historyDiv.classList.add('hidden');
+                return;
+            }
+
+            // Build history HTML
+            let historyHTML = `
+                    <div class="mb-3 p-3 bg-white rounded-lg border border-green-300">
+                        <p class="text-sm"><strong class="text-gray-900">Name:</strong> ${visitor.name}</p>
+                        <p class="text-sm"><strong class="text-gray-900">Total Visits:</strong> ${history.length}</p>
+                        <p class="text-sm"><strong class="text-gray-900">Last Visit:</strong> ${new Date(history[0].in_time).toLocaleDateString()}</p>
+                    </div>
+                    <div class="max-h-48 overflow-y-auto space-y-2">
+                `;
+
+            history.forEach((visit, index) => {
+                const statusBadge = visit.out_time
+                    ? '<span class="text-xs px-2 py-1 bg-gray-100 text-gray-700 rounded">Completed</span>'
+                    : '<span class="text-xs px-2 py-1 bg-green-100 text-green-700 rounded">Active</span>';
+
+                historyHTML += `
+                        <div class="p-3 bg-white rounded border border-green-200 text-sm">
+                            <div class="flex justify-between items-start mb-1">
+                                <span class="font-medium text-gray-900">${visit.organization_name || 'Unknown Location'}</span>
+                                ${statusBadge}
+                            </div>
+                            <p class="text-gray-600 text-xs">
+                                📍 ${visit.organization_type || 'N/A'} • 
+                                🕒 ${new Date(visit.in_time).toLocaleString()}
+                                ${visit.duration ? ` • Duration: ${visit.duration} min` : ''}
+                            </p>
+                        </div>
+                    `;
+            });
+
+            historyHTML += '</div>';
+
+            historyContent.innerHTML = historyHTML;
+            historyDiv.classList.remove('hidden');
+
+            // Scroll to history
+            historyDiv.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+        }
+
         // Add Item functionality
         document.getElementById('addItemBtn').addEventListener('click', () => {
             addItemField();
@@ -269,44 +380,44 @@
             itemDiv.dataset.itemIndex = itemIndex;
 
             itemDiv.innerHTML = `
-                        <div class="flex justify-between items-start mb-4">
-                            <h3 class="text-sm font-medium text-gray-900">Item ${itemIndex + 1}</h3>
-                            <button type="button" onclick="removeItem(${itemIndex})" class="text-red-600 hover:text-red-900 text-sm font-medium">
-                                Remove
-                            </button>
-                        </div>
-                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                            <div>
-                                <label class="block text-sm font-medium text-gray-700 mb-2">Item Name *</label>
-                                <input type="text" name="items[${itemIndex}][item_name]" 
-                                    class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
-                                    placeholder="Laptop, Bag, etc." required>
-                            </div>
-                            <div>
-                                <label class="block text-sm font-medium text-gray-700 mb-2">Item Type *</label>
-                                <select name="items[${itemIndex}][item_type]" 
-                                    class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
-                                    required>
-                                    <option value="">Select type...</option>
-                                    <option value="personal">Personal (Bag, Laptop, Phone)</option>
-                                    <option value="office">Office Equipment</option>
-                                    <option value="delivery">Delivery (Package, Box)</option>
-                                    <option value="other">Other</option>
-                                </select>
-                            </div>
-                            <div>
-                                <label class="block text-sm font-medium text-gray-700 mb-2">Quantity *</label>
-                                <input type="number" name="items[${itemIndex}][quantity]" min="1" value="1"
-                                    class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
-                                    required>
-                            </div>
-                            <div>
-                                <label class="block text-sm font-medium text-gray-700 mb-2">Item Photo (Optional)</label>
-                                <input type="file" name="items[${itemIndex}][item_photo]" accept=".jpg,.jpeg,.png"
-                                    class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500">
-                            </div>
-                        </div>
-                    `;
+                                    <div class="flex justify-between items-start mb-4">
+                                        <h3 class="text-sm font-medium text-gray-900">Item ${itemIndex + 1}</h3>
+                                        <button type="button" onclick="removeItem(${itemIndex})" class="text-red-600 hover:text-red-900 text-sm font-medium">
+                                            Remove
+                                        </button>
+                                    </div>
+                                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                        <div>
+                                            <label class="block text-sm font-medium text-gray-700 mb-2">Item Name *</label>
+                                            <input type="text" name="items[${itemIndex}][item_name]" 
+                                                class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
+                                                placeholder="Laptop, Bag, etc." required>
+                                        </div>
+                                        <div>
+                                            <label class="block text-sm font-medium text-gray-700 mb-2">Item Type *</label>
+                                            <select name="items[${itemIndex}][item_type]" 
+                                                class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
+                                                required>
+                                                <option value="">Select type...</option>
+                                                <option value="personal">Personal (Bag, Laptop, Phone)</option>
+                                                <option value="office">Office Equipment</option>
+                                                <option value="delivery">Delivery (Package, Box)</option>
+                                                <option value="other">Other</option>
+                                            </select>
+                                        </div>
+                                        <div>
+                                            <label class="block text-sm font-medium text-gray-700 mb-2">Quantity *</label>
+                                            <input type="number" name="items[${itemIndex}][quantity]" min="1" value="1"
+                                                class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
+                                                required>
+                                        </div>
+                                        <div>
+                                            <label class="block text-sm font-medium text-gray-700 mb-2">Item Photo (Optional)</label>
+                                            <input type="file" name="items[${itemIndex}][item_photo]" accept=".jpg,.jpeg,.png"
+                                                class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500">
+                                        </div>
+                                    </div>
+                                `;
 
             container.appendChild(itemDiv);
             itemIndex++;
@@ -329,7 +440,7 @@
         function toggleCustomPurposeReg(selectElement) {
             const customPurposeField = document.getElementById('customPurposeFieldReg');
             const customPurposeInput = document.getElementById('customPurpose');
-            
+
             if (selectElement.value === 'Other') {
                 customPurposeField.classList.remove('hidden');
                 customPurposeInput.required = true;
@@ -353,16 +464,16 @@
             showLoading(true);
 
             const formData = new FormData(e.target);
-            
+
             // Handle custom purpose: if "Other" is selected, use custom_purpose value
             const purposeSelect = document.getElementById('purpose').value;
             const customPurpose = document.getElementById('customPurpose').value;
-            
+
             if (purposeSelect === 'Other' && customPurpose) {
                 formData.set('purpose', customPurpose);
                 formData.delete('custom_purpose');
             }
-            
+
             formData.append('auto_checkin', '1');
 
             try {
