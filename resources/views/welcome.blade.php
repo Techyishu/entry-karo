@@ -424,7 +424,7 @@
                                 stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                     d="M5 13l4 4L19 7"></path>
-                            </svg>Unlimited Visitors</li>
+                            </svg>Unlimited History</li>
                         <li class="flex items-center"><svg class="w-5 h-5 text-green-500 mr-2" fill="none"
                                 stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
