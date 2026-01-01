@@ -68,4 +68,42 @@ class Visitor extends Model
     {
         return $this->activeEntry()->exists();
     }
+
+    /**
+     * Get visitor's location history (all places they've visited).
+     * Returns collection of entries with organization details.
+     */
+    public function getLocationHistory()
+    {
+        return $this->entries()
+            ->with(['guardUser.customer'])
+            ->latest('in_time')
+            ->get()
+            ->map(function ($entry) {
+                $customer = $entry->guardUser->customer ?? $entry->guardUser;
+                return [
+                    'id' => $entry->id,
+                    'organization_name' => $customer->name,
+                    'organization_type' => $customer->organization_type ?? 'N/A',
+                    'in_time' => $entry->in_time,
+                    'out_time' => $entry->out_time,
+                    'duration' => $entry->duration_minutes,
+                    'guard_name' => $entry->guardUser->name,
+                ];
+            });
+    }
+
+    /**
+     * Get unique locations visited by this visitor.
+     */
+    public function getUniqueLocationsCount(): int
+    {
+        return $this->entries()
+            ->with('guardUser.customer')
+            ->get()
+            ->pluck('guardUser.customer.id')
+            ->filter()
+            ->unique()
+            ->count();
+    }
 }

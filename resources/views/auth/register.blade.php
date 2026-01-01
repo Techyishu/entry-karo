@@ -53,6 +53,36 @@
                 @enderror
             </div>
 
+            <!-- Organization Type -->
+            <div>
+                <label for="organization_type" class="block text-sm font-medium text-gray-700">Organization Type</label>
+                <select id="organization_type" name="organization_type" required
+                    class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-green-500 focus:border-green-500 sm:text-sm">
+                    <option value="">Select your organization type</option>
+                    <option value="school" {{ old('organization_type') == 'school' ? 'selected' : '' }}>🏫 School</option>
+                    <option value="college" {{ old('organization_type') == 'college' ? 'selected' : '' }}>🎓 College
+                    </option>
+                    <option value="university" {{ old('organization_type') == 'university' ? 'selected' : '' }}>🏛️
+                        University</option>
+                    <option value="office" {{ old('organization_type') == 'office' ? 'selected' : '' }}>🏢
+                        Office/Corporate</option>
+                    <option value="hospital" {{ old('organization_type') == 'hospital' ? 'selected' : '' }}>🏥
+                        Hospital/Clinic</option>
+                    <option value="hotel" {{ old('organization_type') == 'hotel' ? 'selected' : '' }}>🏨 Hotel/Resort
+                    </option>
+                    <option value="apartment" {{ old('organization_type') == 'apartment' ? 'selected' : '' }}>🏘️
+                        Apartment/Society</option>
+                    <option value="factory" {{ old('organization_type') == 'factory' ? 'selected' : '' }}>🏭
+                        Factory/Industry</option>
+                    <option value="warehouse" {{ old('organization_type') == 'warehouse' ? 'selected' : '' }}>📦 Warehouse
+                    </option>
+                    <option value="other" {{ old('organization_type') == 'other' ? 'selected' : '' }}>🏗️ Other</option>
+                </select>
+                @error('organization_type')
+                    <p class="mt-2 text-sm text-red-600">{{ $message }}</p>
+                @enderror
+            </div>
+
             <!-- Password -->
             <div>
                 <label for="password" class="block text-sm font-medium text-gray-700">Password</label>

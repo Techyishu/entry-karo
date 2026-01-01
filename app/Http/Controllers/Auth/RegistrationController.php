@@ -31,6 +31,7 @@ class RegistrationController extends Controller
             'email' => ['required', 'string', 'email', 'max:255', 'unique:users'],
             'mobile_number' => ['required', 'string', 'max:15', 'unique:users'],
             'password' => ['required', 'confirmed', Rules\Password::defaults()],
+            'organization_type' => ['required', 'string', 'in:school,college,university,office,hospital,hotel,apartment,factory,warehouse,other'],
         ]);
 
         $user = User::create([
@@ -39,6 +40,7 @@ class RegistrationController extends Controller
             'mobile_number' => $request->mobile_number,
             'password' => Hash::make($request->password),
             'role' => 'customer', // Default role for self-registration is customer
+            'organization_type' => $request->organization_type,
         ]);
 
         Auth::login($user);
