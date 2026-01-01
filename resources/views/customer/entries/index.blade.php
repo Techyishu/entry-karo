@@ -43,8 +43,8 @@
                                 <td class="px-6 py-4 whitespace-nowrap">
                                     <div class="flex items-center">
                                         <div class="flex-shrink-0 h-10 w-10">
-                                            @if($entry->visitor->image_path)
-                                                <img class="h-10 w-10 rounded-full object-cover" src="{{ asset('storage/' . $entry->visitor->image_path) }}" alt="">
+                                            @if($entry->visitor->photo_path)
+                                                <img class="h-10 w-10 rounded-full object-cover" src="{{ Storage::url($entry->visitor->photo_path) }}" alt="">
                                             @else
                                                 <div class="h-10 w-10 rounded-full bg-gray-200 flex items-center justify-center text-gray-500">
                                                     <svg class="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">

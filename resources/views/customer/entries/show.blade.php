@@ -57,9 +57,9 @@
             <div class="p-6">
                 <div class="flex flex-col sm:flex-row gap-6">
                     <!-- Photo -->
-                    @if ($entry->visitor->image_path)
+                    @if ($entry->visitor->photo_path)
                         <div class="flex-shrink-0">
-                            <img src="{{ asset('storage/' . $entry->visitor->image_path) }}" alt="{{ $entry->visitor->name }}" class="w-32 h-32 rounded-2xl object-cover border-2 border-gray-200">
+                            <img src="{{ Storage::url($entry->visitor->photo_path) }}" alt="{{ $entry->visitor->name }}" class="w-32 h-32 rounded-2xl object-cover border-2 border-gray-200">
                         </div>
                     @else
                         <div class="flex-shrink-0 w-32 h-32 rounded-2xl bg-gray-100 flex items-center justify-center">
