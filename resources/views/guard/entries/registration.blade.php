@@ -58,7 +58,6 @@
                             </div>
                         </div>
 
-                        <!-- Name -->
                         <div>
                             <label for="name" class="block text-sm font-medium text-gray-700 mb-2">
                                 Full Name *
@@ -66,6 +65,16 @@
                             <input type="text" id="name" name="name"
                                 class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
                                 placeholder="John Doe" maxlength="255" required>
+                        </div>
+
+                        <!-- Company -->
+                        <div>
+                            <label for="company" class="block text-sm font-medium text-gray-700 mb-2">
+                                Company/Organization <span class="text-xs text-gray-500">(Optional)</span>
+                            </label>
+                            <input type="text" id="company" name="company"
+                                class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
+                                placeholder="e.g., ABC Corp, XYZ Ltd" maxlength="255">
                         </div>
 
                         <!-- Address -->
@@ -293,6 +302,7 @@
                 if (response.ok && data.found) {
                     // Auto-fill visitor details
                     document.getElementById('name').value = data.visitor.name || '';
+                    document.getElementById('company').value = data.visitor.company || '';
                     document.getElementById('address').value = data.visitor.address || '';
                     if (data.visitor.vehicle_number) {
                         document.getElementById('vehicle_number').value = data.visitor.vehicle_number;
@@ -325,13 +335,13 @@
 
             // Build history HTML
             let historyHTML = `
-                    <div class="mb-3 p-3 bg-white rounded-lg border border-green-300">
-                        <p class="text-sm"><strong class="text-gray-900">Name:</strong> ${visitor.name}</p>
-                        <p class="text-sm"><strong class="text-gray-900">Total Visits:</strong> ${history.length}</p>
-                        <p class="text-sm"><strong class="text-gray-900">Last Visit:</strong> ${new Date(history[0].in_time).toLocaleDateString()}</p>
-                    </div>
-                    <div class="max-h-48 overflow-y-auto space-y-2">
-                `;
+                            <div class="mb-3 p-3 bg-white rounded-lg border border-green-300">
+                                <p class="text-sm"><strong class="text-gray-900">Name:</strong> ${visitor.name}</p>
+                                <p class="text-sm"><strong class="text-gray-900">Total Visits:</strong> ${history.length}</p>
+                                <p class="text-sm"><strong class="text-gray-900">Last Visit:</strong> ${new Date(history[0].in_time).toLocaleDateString()}</p>
+                            </div>
+                            <div class="max-h-48 overflow-y-auto space-y-2">
+                        `;
 
             history.forEach((visit, index) => {
                 const statusBadge = visit.out_time
@@ -339,18 +349,18 @@
                     : '<span class="text-xs px-2 py-1 bg-green-100 text-green-700 rounded">Active</span>';
 
                 historyHTML += `
-                        <div class="p-3 bg-white rounded border border-green-200 text-sm">
-                            <div class="flex justify-between items-start mb-1">
-                                <span class="font-medium text-gray-900">${visit.organization_name || 'Unknown Location'}</span>
-                                ${statusBadge}
-                            </div>
-                            <p class="text-gray-600 text-xs">
-                                📍 ${visit.organization_type || 'N/A'} • 
-                                🕒 ${new Date(visit.in_time).toLocaleString()}
-                                ${visit.duration ? ` • Duration: ${visit.duration} min` : ''}
-                            </p>
-                        </div>
-                    `;
+                                <div class="p-3 bg-white rounded border border-green-200 text-sm">
+                                    <div class="flex justify-between items-start mb-1">
+                                        <span class="font-medium text-gray-900">${visit.organization_name || 'Unknown Location'}</span>
+                                        ${statusBadge}
+                                    </div>
+                                    <p class="text-gray-600 text-xs">
+                                        📍 ${visit.organization_type || 'N/A'} • 
+                                        🕒 ${new Date(visit.in_time).toLocaleString()}
+                                        ${visit.duration ? ` • Duration: ${visit.duration} min` : ''}
+                                    </p>
+                                </div>
+                            `;
             });
 
             historyHTML += '</div>';
@@ -380,44 +390,44 @@
             itemDiv.dataset.itemIndex = itemIndex;
 
             itemDiv.innerHTML = `
-                                    <div class="flex justify-between items-start mb-4">
-                                        <h3 class="text-sm font-medium text-gray-900">Item ${itemIndex + 1}</h3>
-                                        <button type="button" onclick="removeItem(${itemIndex})" class="text-red-600 hover:text-red-900 text-sm font-medium">
-                                            Remove
-                                        </button>
-                                    </div>
-                                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                                        <div>
-                                            <label class="block text-sm font-medium text-gray-700 mb-2">Item Name *</label>
-                                            <input type="text" name="items[${itemIndex}][item_name]" 
-                                                class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
-                                                placeholder="Laptop, Bag, etc." required>
-                                        </div>
-                                        <div>
-                                            <label class="block text-sm font-medium text-gray-700 mb-2">Item Type *</label>
-                                            <select name="items[${itemIndex}][item_type]" 
-                                                class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
-                                                required>
-                                                <option value="">Select type...</option>
-                                                <option value="personal">Personal (Bag, Laptop, Phone)</option>
-                                                <option value="office">Office Equipment</option>
-                                                <option value="delivery">Delivery (Package, Box)</option>
-                                                <option value="other">Other</option>
-                                            </select>
-                                        </div>
-                                        <div>
-                                            <label class="block text-sm font-medium text-gray-700 mb-2">Quantity *</label>
-                                            <input type="number" name="items[${itemIndex}][quantity]" min="1" value="1"
-                                                class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
-                                                required>
-                                        </div>
-                                        <div>
-                                            <label class="block text-sm font-medium text-gray-700 mb-2">Item Photo (Optional)</label>
-                                            <input type="file" name="items[${itemIndex}][item_photo]" accept=".jpg,.jpeg,.png"
-                                                class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500">
-                                        </div>
-                                    </div>
-                                `;
+                                            <div class="flex justify-between items-start mb-4">
+                                                <h3 class="text-sm font-medium text-gray-900">Item ${itemIndex + 1}</h3>
+                                                <button type="button" onclick="removeItem(${itemIndex})" class="text-red-600 hover:text-red-900 text-sm font-medium">
+                                                    Remove
+                                                </button>
+                                            </div>
+                                            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                                <div>
+                                                    <label class="block text-sm font-medium text-gray-700 mb-2">Item Name *</label>
+                                                    <input type="text" name="items[${itemIndex}][item_name]" 
+                                                        class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
+                                                        placeholder="Laptop, Bag, etc." required>
+                                                </div>
+                                                <div>
+                                                    <label class="block text-sm font-medium text-gray-700 mb-2">Item Type *</label>
+                                                    <select name="items[${itemIndex}][item_type]" 
+                                                        class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
+                                                        required>
+                                                        <option value="">Select type...</option>
+                                                        <option value="personal">Personal (Bag, Laptop, Phone)</option>
+                                                        <option value="office">Office Equipment</option>
+                                                        <option value="delivery">Delivery (Package, Box)</option>
+                                                        <option value="other">Other</option>
+                                                    </select>
+                                                </div>
+                                                <div>
+                                                    <label class="block text-sm font-medium text-gray-700 mb-2">Quantity *</label>
+                                                    <input type="number" name="items[${itemIndex}][quantity]" min="1" value="1"
+                                                        class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
+                                                        required>
+                                                </div>
+                                                <div>
+                                                    <label class="block text-sm font-medium text-gray-700 mb-2">Item Photo (Optional)</label>
+                                                    <input type="file" name="items[${itemIndex}][item_photo]" accept=".jpg,.jpeg,.png"
+                                                        class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500">
+                                                </div>
+                                            </div>
+                                        `;
 
             container.appendChild(itemDiv);
             itemIndex++;

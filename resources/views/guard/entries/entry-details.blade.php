@@ -83,6 +83,12 @@
                                 <p class="text-xs text-gray-500 uppercase font-semibold tracking-wide mb-1">Mobile</p>
                                 <p class="text-sm text-gray-900">{{ $entry->visitor->mobile_number }}</p>
                             </div>
+                            @if($entry->visitor->company)
+                                <div>
+                                    <p class="text-xs text-gray-500 uppercase font-semibold tracking-wide mb-1">Company</p>
+                                    <p class="text-sm text-gray-900">{{ $entry->visitor->company }}</p>
+                                </div>
+                            @endif
                             <div>
                                 <p class="text-xs text-gray-500 uppercase font-semibold tracking-wide mb-1">Purpose</p>
                                 <p class="text-sm text-gray-900">{{ $entry->visitor->purpose }}</p>

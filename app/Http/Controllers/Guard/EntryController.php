@@ -548,6 +548,7 @@ class EntryController
                 'id' => $visitor->id,
                 'mobile_number' => $visitor->mobile_number,
                 'name' => $visitor->name,
+                'company' => $visitor->company,
                 'address' => $visitor->address,
                 'purpose' => $visitor->purpose,
                 'vehicle_number' => $visitor->vehicle_number,

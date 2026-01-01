@@ -18,6 +18,7 @@ class Visitor extends Model
     protected $fillable = [
         'mobile_number',
         'name',
+        'company',
         'address',
         'purpose',
         'vehicle_number',
