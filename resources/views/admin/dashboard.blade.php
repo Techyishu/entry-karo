@@ -101,7 +101,7 @@
                             <div class="w-2 h-2 rounded-full bg-green-500"></div>
                             <p class="text-gray-500 text-sm font-medium">Monthly Recurring (MRR)</p>
                         </div>
-                        <p class="text-2xl font-bold text-gray-900">{{ $subscriptionStats['mrr'] }}</p>
+                        <p class="text-2xl font-bold text-gray-900">₹{{ number_format($subscriptionStats['mrr'], 2) }}</p>
                     </div>
 
                     <!-- ARR -->
@@ -110,7 +110,7 @@
                             <div class="w-2 h-2 rounded-full bg-green-500"></div>
                             <p class="text-gray-500 text-sm font-medium">Annual Recurring (ARR)</p>
                         </div>
-                        <p class="text-2xl font-bold text-gray-900">{{ $subscriptionStats['arr'] }}</p>
+                        <p class="text-2xl font-bold text-gray-900">₹{{ number_format($subscriptionStats['arr'], 2) }}</p>
                     </div>
 
                     <!-- Total Revenue -->
@@ -119,7 +119,7 @@
                             <div class="w-2 h-2 rounded-full bg-green-500"></div>
                             <p class="text-gray-500 text-sm font-medium">Total Revenue</p>
                         </div>
-                        <p class="text-2xl font-bold text-gray-900">{{ $subscriptionStats['total_revenue'] }}</p>
+                        <p class="text-2xl font-bold text-gray-900">₹{{ number_format($subscriptionStats['total_revenue'], 2) }}</p>
                     </div>
                 </div>
             </div>
