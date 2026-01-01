@@ -45,40 +45,54 @@
         @if($showSubscriptionPopup)
             <div class="fixed inset-0 z-[100] bg-gray-900 bg-opacity-90 flex items-center justify-center p-4 backdrop-blur-sm">
                 <div class="bg-white rounded-2xl shadow-xl max-w-md w-full p-8 text-center relative overflow-hidden">
-                     <!-- Status Icon -->
-                    <div class="mx-auto flex h-16 w-16 items-center justify-center rounded-full bg-red-100 mb-6 animate-bounce" style="animation-duration: 3s;">
-                        <svg class="h-8 w-8 text-red-600" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
-                            <path stroke-linecap="round" stroke-linejoin="round" d="M16.5 10.5V6.75a4.5 4.5 0 10-9 0v3.75m-.75 11.25h10.5a2.25 2.25 0 002.25-2.25v-6.75a2.25 2.25 0 00-2.25-2.25H6.75a2.25 2.25 0 00-2.25 2.25v6.75a2.25 2.25 0 002.25 2.25z" />
+                    <!-- Status Icon -->
+                    <div class="mx-auto flex h-16 w-16 items-center justify-center rounded-full bg-red-100 mb-6 animate-bounce"
+                        style="animation-duration: 3s;">
+                        <svg class="h-8 w-8 text-red-600" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
+                            stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round"
+                                d="M16.5 10.5V6.75a4.5 4.5 0 10-9 0v3.75m-.75 11.25h10.5a2.25 2.25 0 002.25-2.25v-6.75a2.25 2.25 0 00-2.25-2.25H6.75a2.25 2.25 0 00-2.25 2.25v6.75a2.25 2.25 0 002.25 2.25z" />
                         </svg>
                     </div>
-                    
+
                     <h2 class="text-2xl font-bold text-gray-900 mb-2">Activation Required</h2>
                     <p class="text-gray-500 mb-8">
-                        Welcome to Entry Karo! Your dashboard is reserved until your subscription is activated. Please contact our support team.
+                        Welcome to Entry Karo! Your dashboard is reserved until your subscription is activated. Please contact
+                        our support team.
                     </p>
 
                     <div class="bg-gray-50 rounded-xl p-6 border border-gray-100 text-left mb-8">
                         <h3 class="text-xs font-bold text-gray-400 uppercase tracking-widest mb-4">Support Contact</h3>
-                        
+
                         @if($superAdmin)
                             <div class="space-y-4">
                                 <div class="flex items-center gap-4">
                                     <div class="p-3 bg-green-100 rounded-xl text-green-600">
-                                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z"></path></svg>
+                                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z">
+                                            </path>
+                                        </svg>
                                     </div>
                                     <div>
                                         <p class="text-xs text-gray-500 font-medium">Call Us</p>
-                                        <a href="tel:{{ $superAdmin->mobile_number }}" class="text-base font-bold text-gray-900 hover:text-green-600 transition">{{ $superAdmin->mobile_number }}</a>
+                                        <a href="tel:{{ $superAdmin->mobile_number }}"
+                                            class="text-base font-bold text-gray-900 hover:text-green-600 transition">{{ $superAdmin->mobile_number }}</a>
                                     </div>
                                 </div>
 
                                 <div class="flex items-center gap-4">
-                                    <div class="p-3 bg-blue-100 rounded-xl text-blue-600">
-                                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"></path></svg>
+                                    <div class="p-3 bg-green-100 rounded-xl text-green-600">
+                                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z">
+                                            </path>
+                                        </svg>
                                     </div>
                                     <div>
                                         <p class="text-xs text-gray-500 font-medium">Email Us</p>
-                                        <a href="mailto:{{ $superAdmin->email }}" class="text-base font-bold text-gray-900 hover:text-blue-600 transition">{{ $superAdmin->email }}</a>
+                                        <a href="mailto:{{ $superAdmin->email }}"
+                                            class="text-base font-bold text-gray-900 hover:text-blue-600 transition">{{ $superAdmin->email }}</a>
                                     </div>
                                 </div>
                             </div>
@@ -90,8 +104,13 @@
                     <!-- Logout Link -->
                     <form method="POST" action="{{ route('logout') }}" class="inline-block">
                         @csrf
-                        <button type="submit" class="text-sm font-medium text-gray-400 hover:text-gray-900 transition flex items-center gap-2">
-                             <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"></path></svg>
+                        <button type="submit"
+                            class="text-sm font-medium text-gray-400 hover:text-gray-900 transition flex items-center gap-2">
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1">
+                                </path>
+                            </svg>
                             Log out
                         </button>
                     </form>
@@ -203,7 +222,7 @@
                                 </svg>
                                 Dashboard
                             </a>
-                            
+
                             <a href="{{ route('customer.guards.index') }}"
                                 class="flex items-center gap-3 px-4 py-3 text-sm font-medium rounded-xl {{ request()->routeIs('customer.guards*') ? 'bg-green-50 text-green-700' : 'text-gray-600 hover:bg-gray-50 hover:text-gray-900' }}">
                                 <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -213,7 +232,7 @@
                                 </svg>
                                 Guards
                             </a>
-                            
+
                             <a href="{{ route('customer.entries.index') }}"
                                 class="flex items-center gap-3 px-4 py-3 text-sm font-medium rounded-xl {{ request()->routeIs('customer.entries*') ? 'bg-green-50 text-green-700' : 'text-gray-600 hover:bg-gray-50 hover:text-gray-900' }}">
                                 <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">

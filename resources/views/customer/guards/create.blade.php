@@ -81,7 +81,7 @@
                 </div>
 
                 <!-- Info Box -->
-                <div class="bg-blue-50 border-2 border-blue-200 rounded-lg p-4">
+                <div class="bg-green-50 border-2 border-green-200 rounded-lg p-4">
                     <div class="flex items-start space-x-3">
                         <svg class="h-6 w-6 text-blue-600 flex-shrink-0 mt-0.5" xmlns="http://www.w3.org/2000/svg"
                             fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -128,7 +128,7 @@
                         Cancel
                     </a>
                     <button type="submit"
-                        class="flex-1 px-4 py-3 bg-blue-600 text-white rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 font-medium text-center">
+                        class="flex-1 px-4 py-3 bg-green-600 text-white rounded-md hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500 font-medium text-center">
                         Create Guard
                     </button>
                 </div>

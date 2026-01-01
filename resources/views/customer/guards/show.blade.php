@@ -55,7 +55,8 @@
                         </div>
                         <div>
                             <p class="text-sm text-gray-500">Role</p>
-                            <span class="inline-flex px-2 py-1 rounded-full bg-blue-100 text-blue-800 text-xs font-medium">
+                            <span
+                                class="inline-flex px-2 py-1 rounded-full bg-green-100 text-green-800 text-xs font-medium">
                                 Guard
                             </span>
                         </div>
@@ -63,7 +64,7 @@
                 </div>
 
                 <!-- Statistics -->
-                <div class="bg-blue-50 rounded-lg p-6">
+                <div class="bg-green-50 rounded-lg p-6">
                     <h2 class="text-lg font-semibold text-blue-900 mb-4">Statistics</h2>
                     <div class="space-y-3">
                         <div>
@@ -129,7 +130,7 @@
                                                 <span
                                                     class="px-2 py-1 rounded-full bg-green-100 text-green-800 text-xs">Completed</span>
                                             @else
-                                                <span class="px-2 py-1 rounded-full bg-blue-100 text-blue-800 text-xs">Active</span>
+                                                <span class="px-2 py-1 rounded-full bg-green-100 text-green-800 text-xs">Active</span>
                                             @endif
                                         </td>
                                     </tr>
@@ -152,7 +153,7 @@
                         Back to Dashboard
                     </a>
                     <a href="{{ route('customer.guards.edit', $guard->id) }}"
-                        class="flex-1 px-4 py-3 bg-blue-600 text-white rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 font-medium text-center">
+                        class="flex-1 px-4 py-3 bg-green-600 text-white rounded-md hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500 font-medium text-center">
                         Edit Guard
                     </a>
                 </div>

@@ -12,7 +12,7 @@
                     <p class="text-gray-600 mt-2">Total: {{ $customers->total() }} customers</p>
                 </div>
                 <a href="{{ route('admin.dashboard') }}"
-                    class="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700">
+                    class="px-4 py-2 bg-green-600 text-white rounded-md hover:bg-green-700">
                     📊 Back to Dashboard
                 </a>
             </div>
@@ -78,7 +78,7 @@
                                         <p class="text-gray-900">{{ $customer->email }}</p>
                                     </td>
                                     <td class="px-6 py-4 whitespace-nowrap">
-                                        <span class="px-2 py-1 text-xs rounded-full bg-blue-100 text-blue-800 font-medium">
+                                        <span class="px-2 py-1 text-xs rounded-full bg-green-100 text-green-800 font-medium">
                                             {{ $customer->guards->count() }} Guards
                                         </span>
                                     </td>
@@ -100,7 +100,7 @@
                                     </td>
                                     <td class="px-6 py-4 whitespace-nowrap text-right space-x-2">
                                         <a href="{{ route('admin.customer.show', $customer) }}"
-                                            class="inline-block px-3 py-1 bg-blue-600 text-white text-xs rounded hover:bg-blue-700">
+                                            class="inline-block px-3 py-1 bg-green-600 text-white text-xs rounded hover:bg-green-700">
                                             📋 View Details
                                         </a>
                                         <form action="{{ route('admin.customers.delete', $customer) }}" method="POST"

@@ -73,7 +73,7 @@
                 </div>
 
                 <!-- Entry Details -->
-                <div class="bg-blue-50 rounded-lg p-6">
+                <div class="bg-green-50 rounded-lg p-6">
                     <h2 class="text-lg font-semibold text-blue-900 mb-4">Entry Details</h2>
 
                     <div class="space-y-3">
@@ -96,7 +96,8 @@
                         @else
                             <div>
                                 <p class="text-sm text-blue-700">Status:</p>
-                                <span class="inline-flex px-2 py-1 rounded-full bg-blue-200 text-blue-800 text-xs font-medium">
+                                <span
+                                    class="inline-flex px-2 py-1 rounded-full bg-green-200 text-green-800 text-xs font-medium">
                                     Active
                                 </span>
                             </div>

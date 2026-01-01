@@ -12,7 +12,7 @@
                     <p class="text-gray-600 mt-2">Total: {{ $guards->total() }} guards</p>
                 </div>
                 <a href="{{ route('admin.dashboard') }}"
-                    class="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700">
+                    class="px-4 py-2 bg-green-600 text-white rounded-md hover:bg-green-700">
                     📊 Back to Dashboard
                 </a>
             </div>
@@ -58,7 +58,7 @@
                                     <td class="px-6 py-4 whitespace-nowrap">
                                         <div class="flex items-center">
                                             <div
-                                                class="w-10 h-10 rounded-full bg-blue-100 flex items-center justify-center mr-3">
+                                                class="w-10 h-10 rounded-full bg-green-100 flex items-center justify-center mr-3">
                                                 <span class="text-blue-600 font-medium">{{ substr($guard->name, 0, 1) }}</span>
                                             </div>
                                             <p class="font-medium text-gray-900">{{ $guard->name }}</p>
@@ -68,7 +68,7 @@
                                         <p class="text-gray-900">{{ $guard->email }}</p>
                                     </td>
                                     <td class="px-6 py-4 whitespace-nowrap">
-                                        <span class="px-2 py-1 text-xs rounded-full bg-blue-100 text-blue-800">
+                                        <span class="px-2 py-1 text-xs rounded-full bg-green-100 text-green-800">
                                             Active
                                         </span>
                                     </td>

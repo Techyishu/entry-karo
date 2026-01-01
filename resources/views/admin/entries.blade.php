@@ -12,7 +12,7 @@
                     <p class="text-gray-600 mt-2">Total: {{ $entries->total() }} entries</p>
                 </div>
                 <a href="{{ route('admin.dashboard') }}"
-                    class="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700">
+                    class="px-4 py-2 bg-green-600 text-white rounded-md hover:bg-green-700">
                     📊 Back to Dashboard
                 </a>
             </div>
@@ -101,7 +101,7 @@
                                                 Checked Out
                                             </span>
                                         @else
-                                            <span class="px-2 py-1 text-xs rounded-full bg-blue-100 text-blue-800">
+                                            <span class="px-2 py-1 text-xs rounded-full bg-green-100 text-green-800">
                                                 Active
                                             </span>
                                         @endif
