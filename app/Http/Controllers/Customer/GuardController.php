@@ -46,8 +46,8 @@ class GuardController extends Controller
 
         $request->validate([
             'name' => 'required|string|max:255',
-            'email' => 'nullable|email|max:255|unique:users,email,' . $customer->id,
-            'mobile_number' => 'nullable|string|max:15|unique:users,mobile_number,' . $customer->id,
+            'email' => 'nullable|email|max:255|unique:users,email',
+            'mobile_number' => 'nullable|string|max:15|unique:users,mobile_number',
             'password' => 'required|string|min:8',
         ], [
             'email.unique' => 'This email is already taken.',

@@ -19,13 +19,13 @@
         <form method="POST" action="{{ route('login') }}" class="space-y-6">
             @csrf
 
-            <!-- Email -->
+            <!-- Email or Mobile Number -->
             <div>
-                <label for="email" class="block text-sm font-medium text-gray-700">Email Address</label>
-                <input id="email" type="email" name="email" value="{{ old('email') }}" required autofocus
+                <label for="login" class="block text-sm font-medium text-gray-700">Email or Mobile Number</label>
+                <input id="login" type="text" name="login" value="{{ old('login') }}" required autofocus
                     class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-green-500 focus:border-green-500 sm:text-sm"
-                    placeholder="you@example.com">
-                @error('email')
+                    placeholder="you@example.com or 9876543210">
+                @error('login')
                     <p class="mt-2 text-sm text-red-600">{{ $message }}</p>
                 @enderror
             </div>

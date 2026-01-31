@@ -19,19 +19,31 @@ class LoginController extends Controller
 
     /**
      * Handle login request.
+     * Supports login with either email or mobile number.
      */
     public function login(Request $request)
     {
         $request->validate([
-            'email' => 'required|email',
+            'login' => 'required|string',
             'password' => 'required|string',
+        ], [
+            'login.required' => 'Please enter your email or mobile number.',
         ]);
 
-        $credentials = $request->only('email', 'password');
+        $loginInput = $request->input('login');
+        $password = $request->input('password');
+
+        // Determine if input is email or mobile number
+        $fieldType = filter_var($loginInput, FILTER_VALIDATE_EMAIL) ? 'email' : 'mobile_number';
+
+        $credentials = [
+            $fieldType => $loginInput,
+            'password' => $password,
+        ];
 
         if (Auth::attempt($credentials)) {
             $request->session()->regenerate();
-            
+
             // Get authenticated user
             $user = Auth::user();
 
@@ -49,8 +61,8 @@ class LoginController extends Controller
         }
 
         return back()->withErrors([
-            'email' => 'The provided credentials do not match our records.',
-        ]);
+            'login' => 'The provided credentials do not match our records.',
+        ])->withInput($request->only('login'));
     }
 
     /**
