@@ -145,26 +145,69 @@
                                     </button>
                                 </div>
 
-                                <!-- Upload Area -->
-                                <div id="photoUploadArea"
-                                    class="border-2 border-dashed border-gray-200 rounded-xl p-6 text-center hover:bg-gray-50 transition cursor-pointer relative">
-                                    <input type="file" id="regPhoto" name="photo" accept="image/*"
-                                        class="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
-                                        onchange="previewPhoto(event)">
-                                    <div class="flex flex-col items-center gap-2">
-                                        <div class="w-12 h-12 rounded-full bg-blue-50 flex items-center justify-center">
-                                            <svg class="w-6 h-6 text-blue-600" fill="none" stroke="currentColor"
+                                <!-- Camera Capture Area (for desktop browsers) -->
+                                <div id="cameraContainer" class="hidden mb-3">
+                                    <video id="cameraVideo" autoplay playsinline
+                                        class="w-full h-48 object-cover rounded-xl border-2 border-gray-200 bg-black"></video>
+                                    <canvas id="cameraCanvas" class="hidden"></canvas>
+                                    <div class="flex gap-2 mt-2">
+                                        <button type="button" onclick="capturePhoto()"
+                                            class="flex-1 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 font-medium flex items-center justify-center gap-2">
+                                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                    d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z">
+                                                </path>
+                                                <circle cx="12" cy="13" r="3"></circle>
+                                            </svg>
+                                            Capture
+                                        </button>
+                                        <button type="button" onclick="stopCamera()"
+                                            class="px-4 py-2 bg-gray-500 text-white rounded-lg hover:bg-gray-600 font-medium">
+                                            Cancel
+                                        </button>
+                                    </div>
+                                </div>
+
+                                <!-- Upload/Camera Options -->
+                                <div id="photoUploadArea" class="space-y-3">
+                                    <!-- Camera Button (Desktop) -->
+                                    <button type="button" onclick="startCamera()"
+                                        class="w-full border-2 border-dashed border-blue-300 bg-blue-50 rounded-xl p-4 text-center hover:bg-blue-100 transition cursor-pointer flex items-center justify-center gap-3">
+                                        <div class="w-10 h-10 rounded-full bg-blue-100 flex items-center justify-center">
+                                            <svg class="w-5 h-5 text-blue-600" fill="none" stroke="currentColor"
                                                 viewBox="0 0 24 24">
                                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                                     d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z">
                                                 </path>
-                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                                    d="M15 13a3 3 0 11-6 0 3 3 0 016 0z"></path>
+                                                <circle cx="12" cy="13" r="3"></circle>
                                             </svg>
                                         </div>
-                                        <div>
-                                            <p class="text-sm font-medium text-gray-700">Tap to upload or take photo</p>
-                                            <p class="text-xs text-gray-400 mt-1">JPG, PNG, or any image (Max 10MB)</p>
+                                        <div class="text-left">
+                                            <p class="text-sm font-semibold text-blue-700">📷 Take Photo with Camera</p>
+                                            <p class="text-xs text-blue-500">Use device camera to capture photo</p>
+                                        </div>
+                                    </button>
+
+                                    <!-- File Upload Option -->
+                                    <div
+                                        class="border-2 border-dashed border-gray-200 rounded-xl p-4 text-center hover:bg-gray-50 transition cursor-pointer relative">
+                                        <input type="file" id="regPhoto" name="photo" accept="image/*" capture="environment"
+                                            class="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
+                                            onchange="previewPhoto(event)">
+                                        <div class="flex items-center justify-center gap-3">
+                                            <div
+                                                class="w-10 h-10 rounded-full bg-gray-100 flex items-center justify-center">
+                                                <svg class="w-5 h-5 text-gray-500" fill="none" stroke="currentColor"
+                                                    viewBox="0 0 24 24">
+                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                        d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z">
+                                                    </path>
+                                                </svg>
+                                            </div>
+                                            <div class="text-left">
+                                                <p class="text-sm font-medium text-gray-700">📁 Upload from Gallery</p>
+                                                <p class="text-xs text-gray-400">JPG, PNG, or any image (Max 10MB)</p>
+                                            </div>
                                         </div>
                                     </div>
                                 </div>
@@ -552,6 +595,107 @@
             document.getElementById('photoPreview').classList.add('hidden');
             document.getElementById('photoUploadArea').classList.remove('hidden');
         }
+
+        // Camera capture functions
+        let cameraStream = null;
+
+        async function startCamera() {
+            try {
+                // Check if getUserMedia is supported
+                if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
+                    showMessage('Camera not supported in this browser. Please use file upload.', 'error');
+                    return;
+                }
+
+                const video = document.getElementById('cameraVideo');
+                const cameraContainer = document.getElementById('cameraContainer');
+                const photoUploadArea = document.getElementById('photoUploadArea');
+
+                // Request camera access with preference for back camera on mobile
+                const constraints = {
+                    video: {
+                        facingMode: { ideal: 'environment' }, // Prefer back camera
+                        width: { ideal: 1280 },
+                        height: { ideal: 720 }
+                    }
+                };
+
+                cameraStream = await navigator.mediaDevices.getUserMedia(constraints);
+                video.srcObject = cameraStream;
+
+                // Show camera view, hide upload area
+                cameraContainer.classList.remove('hidden');
+                photoUploadArea.classList.add('hidden');
+                document.getElementById('photoPreview').classList.add('hidden');
+
+            } catch (error) {
+                console.error('Camera access error:', error);
+                if (error.name === 'NotAllowedError') {
+                    showMessage('Camera access denied. Please allow camera permission and try again.', 'error');
+                } else if (error.name === 'NotFoundError') {
+                    showMessage('No camera found on this device. Please use file upload.', 'error');
+                } else {
+                    showMessage('Could not access camera: ' + error.message, 'error');
+                }
+            }
+        }
+
+        function capturePhoto() {
+            const video = document.getElementById('cameraVideo');
+            const canvas = document.getElementById('cameraCanvas');
+            const ctx = canvas.getContext('2d');
+
+            // Set canvas size to video size
+            canvas.width = video.videoWidth;
+            canvas.height = video.videoHeight;
+
+            // Draw video frame to canvas
+            ctx.drawImage(video, 0, 0);
+
+            // Convert to blob and create file
+            canvas.toBlob(function (blob) {
+                // Create a File object from the blob
+                const file = new File([blob], 'camera-photo.jpg', { type: 'image/jpeg' });
+
+                // Create a DataTransfer to set the file input
+                const dataTransfer = new DataTransfer();
+                dataTransfer.items.add(file);
+                document.getElementById('regPhoto').files = dataTransfer.files;
+
+                // Show preview
+                const reader = new FileReader();
+                reader.onload = function (e) {
+                    document.getElementById('photoPreviewImage').src = e.target.result;
+                    document.getElementById('photoPreview').classList.remove('hidden');
+                };
+                reader.readAsDataURL(blob);
+
+                // Stop camera and hide camera view
+                stopCamera();
+
+                showMessage('Photo captured successfully!', 'success');
+            }, 'image/jpeg', 0.85); // 85% quality JPEG
+        }
+
+        function stopCamera() {
+            if (cameraStream) {
+                cameraStream.getTracks().forEach(track => track.stop());
+                cameraStream = null;
+            }
+
+            const video = document.getElementById('cameraVideo');
+            video.srcObject = null;
+
+            document.getElementById('cameraContainer').classList.add('hidden');
+            document.getElementById('photoUploadArea').classList.remove('hidden');
+        }
+
+        // Make functions globally accessible
+        window.startCamera = startCamera;
+        window.capturePhoto = capturePhoto;
+        window.stopCamera = stopCamera;
+        window.previewPhoto = previewPhoto;
+        window.clearPhotoPreview = clearPhotoPreview;
 
         window.addEventListener('DOMContentLoaded', function () {
             document.getElementById('mobile_number').focus();
