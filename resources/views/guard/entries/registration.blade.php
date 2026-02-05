@@ -509,13 +509,13 @@
 
             // Build history HTML
             let historyHTML = `
-                                    <div class="mb-3 p-3 bg-white rounded-lg border border-green-300">
-                                        <p class="text-sm"><strong class="text-gray-900">Name:</strong> ${visitor.name}</p>
-                                        <p class="text-sm"><strong class="text-gray-900">Total Visits:</strong> ${history.length}</p>
-                                        <p class="text-sm"><strong class="text-gray-900">Last Visit:</strong> ${new Date(history[0].in_time).toLocaleDateString()}</p>
-                                    </div>
-                                    <div class="max-h-48 overflow-y-auto space-y-2">
-                                `;
+                                        <div class="mb-3 p-3 bg-white rounded-lg border border-green-300">
+                                            <p class="text-sm"><strong class="text-gray-900">Name:</strong> ${visitor.name}</p>
+                                            <p class="text-sm"><strong class="text-gray-900">Total Visits:</strong> ${history.length}</p>
+                                            <p class="text-sm"><strong class="text-gray-900">Last Visit:</strong> ${new Date(history[0].in_time).toLocaleDateString()}</p>
+                                        </div>
+                                        <div class="max-h-48 overflow-y-auto space-y-2">
+                                    `;
 
             history.forEach((visit, index) => {
                 const statusBadge = visit.out_time
@@ -523,18 +523,18 @@
                     : '<span class="text-xs px-2 py-1 bg-green-100 text-green-700 rounded">Active</span>';
 
                 historyHTML += `
-                                        <div class="p-3 bg-white rounded border border-green-200 text-sm">
-                                            <div class="flex justify-between items-start mb-1">
-                                                <span class="font-medium text-gray-900">${visit.organization_name || 'Unknown Location'}</span>
-                                                ${statusBadge}
+                                            <div class="p-3 bg-white rounded border border-green-200 text-sm">
+                                                <div class="flex justify-between items-start mb-1">
+                                                    <span class="font-medium text-gray-900">${visit.organization_name || 'Unknown Location'}</span>
+                                                    ${statusBadge}
+                                                </div>
+                                                <p class="text-gray-600 text-xs">
+                                                    📍 ${visit.organization_type || 'N/A'} • 
+                                                    🕒 ${new Date(visit.in_time).toLocaleString()}
+                                                    ${visit.duration ? ` • Duration: ${visit.duration} min` : ''}
+                                                </p>
                                             </div>
-                                            <p class="text-gray-600 text-xs">
-                                                📍 ${visit.organization_type || 'N/A'} • 
-                                                🕒 ${new Date(visit.in_time).toLocaleString()}
-                                                ${visit.duration ? ` • Duration: ${visit.duration} min` : ''}
-                                            </p>
-                                        </div>
-                                    `;
+                                        `;
             });
 
             historyHTML += '</div>';
@@ -551,6 +551,9 @@
             addItemField();
         });
 
+        // Track active camera streams for items
+        let activeItemCameraStreams = {};
+
         function addItemField() {
             const container = document.getElementById('itemsContainer');
             const noItemsMsg = document.getElementById('noItemsMessage');
@@ -564,50 +567,218 @@
             itemDiv.dataset.itemIndex = itemIndex;
 
             itemDiv.innerHTML = `
-                                                    <div class="flex justify-between items-start mb-4">
-                                                        <h3 class="text-sm font-medium text-gray-900">Item ${itemIndex + 1}</h3>
-                                                        <button type="button" onclick="removeItem(${itemIndex})" class="text-red-600 hover:text-red-900 text-sm font-medium">
-                                                            Remove
-                                                        </button>
-                                                    </div>
-                                                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                                                        <div>
-                                                            <label class="block text-sm font-medium text-gray-700 mb-2">Item Name *</label>
-                                                            <input type="text" name="items[${itemIndex}][item_name]" 
-                                                                class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
-                                                                placeholder="Laptop, Bag, etc." required>
-                                                        </div>
-                                                        <div>
-                                                            <label class="block text-sm font-medium text-gray-700 mb-2">Item Type *</label>
-                                                            <select name="items[${itemIndex}][item_type]" 
-                                                                class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
-                                                                required>
-                                                                <option value="">Select type...</option>
-                                                                <option value="personal">Personal (Bag, Laptop, Phone)</option>
-                                                                <option value="office">Office Equipment</option>
-                                                                <option value="delivery">Delivery (Package, Box)</option>
-                                                                <option value="other">Other</option>
-                                                            </select>
-                                                        </div>
-                                                        <div>
-                                                            <label class="block text-sm font-medium text-gray-700 mb-2">Quantity *</label>
-                                                            <input type="number" name="items[${itemIndex}][quantity]" min="1" value="1"
-                                                                class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
-                                                                required>
-                                                        </div>
-                                                        <div>
-                                                            <label class="block text-sm font-medium text-gray-700 mb-2">Item Photo (Optional)</label>
-                                                            <input type="file" name="items[${itemIndex}][item_photo]" accept=".jpg,.jpeg,.png"
-                                                                class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500">
-                                                        </div>
-                                                    </div>
-                                                `;
+                    <div class="flex justify-between items-start mb-4">
+                        <h3 class="text-sm font-medium text-gray-900">Item ${itemIndex + 1}</h3>
+                        <button type="button" onclick="removeItem(${itemIndex})" class="text-red-600 hover:text-red-900 text-sm font-medium">
+                            Remove
+                        </button>
+                    </div>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-2">Item Name *</label>
+                            <input type="text" name="items[${itemIndex}][item_name]" 
+                                class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
+                                placeholder="Laptop, Bag, etc." required>
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-2">Item Type *</label>
+                            <select name="items[${itemIndex}][item_type]" 
+                                class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
+                                required>
+                                <option value="">Select type...</option>
+                                <option value="personal">Personal (Bag, Laptop, Phone)</option>
+                                <option value="office">Office Equipment</option>
+                                <option value="delivery">Delivery (Package, Box)</option>
+                                <option value="other">Other</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-2">Quantity *</label>
+                            <input type="number" name="items[${itemIndex}][quantity]" min="1" value="1"
+                                class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
+                                required>
+                        </div>
+                        <div class="md:col-span-2">
+                            <label class="block text-sm font-medium text-gray-700 mb-2">Item Photo (Optional)</label>
+
+                            <!-- Item Photo Preview -->
+                            <div id="itemPhotoPreview_${itemIndex}" class="hidden mb-3 relative">
+                                <img id="itemPhotoPreviewImg_${itemIndex}" src="" alt="Item Photo Preview"
+                                    class="w-32 h-32 object-cover rounded-lg border-2 border-gray-200">
+                                <button type="button" onclick="removeItemPhoto(${itemIndex})"
+                                    class="absolute top-1 right-1 bg-red-500 text-white rounded-full p-1 hover:bg-red-600 shadow-lg">
+                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                                    </svg>
+                                </button>
+                            </div>
+
+                            <!-- Item Camera Container -->
+                            <div id="itemCameraContainer_${itemIndex}" class="hidden mb-3">
+                                <video id="itemCameraVideo_${itemIndex}" autoplay playsinline class="w-full max-w-sm h-48 object-cover rounded-lg border-2 border-gray-200 bg-black"></video>
+                                <canvas id="itemCameraCanvas_${itemIndex}" class="hidden"></canvas>
+                                <div class="flex gap-2 mt-2">
+                                    <button type="button" onclick="captureItemPhoto(${itemIndex})"
+                                        class="flex-1 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 font-medium flex items-center justify-center gap-2 text-sm">
+                                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z"></path>
+                                            <circle cx="12" cy="13" r="3"></circle>
+                                        </svg>
+                                        Capture
+                                    </button>
+                                    <button type="button" onclick="stopItemCamera(${itemIndex})"
+                                        class="px-3 py-2 bg-gray-500 text-white rounded-lg hover:bg-gray-600 font-medium text-sm">
+                                        Cancel
+                                    </button>
+                                </div>
+                            </div>
+
+                            <!-- Item Upload/Camera Options -->
+                            <div id="itemPhotoUploadArea_${itemIndex}" class="space-y-2">
+                                <!-- Camera Button -->
+                                <button type="button" onclick="startItemCamera(${itemIndex})"
+                                    class="w-full border-2 border-dashed border-blue-300 bg-blue-50 rounded-lg p-3 text-center hover:bg-blue-100 transition cursor-pointer flex items-center justify-center gap-2">
+                                    <svg class="w-5 h-5 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                            d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z"></path>
+                                        <circle cx="12" cy="13" r="3"></circle>
+                                    </svg>
+                                    <span class="text-sm font-medium text-blue-700">📷 Take Photo</span>
+                                </button>
+
+                                <!-- File Upload -->
+                                <div class="border-2 border-dashed border-gray-200 rounded-lg p-3 text-center hover:bg-gray-50 transition cursor-pointer relative">
+                                    <input type="file" id="itemPhotoInput_${itemIndex}" name="items[${itemIndex}][item_photo]" accept=".jpg,.jpeg,.png" capture="environment"
+                                        class="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
+                                        onchange="previewItemPhoto(${itemIndex}, event)">
+                                    <div class="flex items-center justify-center gap-2">
+                                        <svg class="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
+                                        </svg>
+                                        <span class="text-sm text-gray-600">📁 Upload from Gallery</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                `;
 
             container.appendChild(itemDiv);
             itemIndex++;
         }
 
+        // Start camera for item photo
+        window.startItemCamera = async function (idx) {
+            try {
+                if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
+                    showAlert('Error', 'Camera not supported in this browser.');
+                    return;
+                }
+
+                const constraints = {
+                    video: {
+                        facingMode: { ideal: 'environment' },
+                        width: { ideal: 1280 },
+                        height: { ideal: 720 }
+                    }
+                };
+
+                const stream = await navigator.mediaDevices.getUserMedia(constraints);
+                activeItemCameraStreams[idx] = stream;
+
+                const video = document.getElementById(`itemCameraVideo_${idx}`);
+                video.srcObject = stream;
+
+                document.getElementById(`itemCameraContainer_${idx}`).classList.remove('hidden');
+                document.getElementById(`itemPhotoUploadArea_${idx}`).classList.add('hidden');
+                document.getElementById(`itemPhotoPreview_${idx}`).classList.add('hidden');
+
+            } catch (error) {
+                console.error('Camera access error:', error);
+                if (error.name === 'NotAllowedError') {
+                    showAlert('Error', 'Camera access denied. Please allow camera permission.');
+                } else if (error.name === 'NotFoundError') {
+                    showAlert('Error', 'No camera found. Please use file upload.');
+                } else {
+                    showAlert('Error', 'Could not access camera: ' + error.message);
+                }
+            }
+        };
+
+        // Capture item photo
+        window.captureItemPhoto = function (idx) {
+            const video = document.getElementById(`itemCameraVideo_${idx}`);
+            const canvas = document.getElementById(`itemCameraCanvas_${idx}`);
+            const ctx = canvas.getContext('2d');
+
+            canvas.width = video.videoWidth;
+            canvas.height = video.videoHeight;
+            ctx.drawImage(video, 0, 0);
+
+            canvas.toBlob(function (blob) {
+                const file = new File([blob], `item-photo-${idx}.jpg`, { type: 'image/jpeg' });
+
+                const dataTransfer = new DataTransfer();
+                dataTransfer.items.add(file);
+                document.getElementById(`itemPhotoInput_${idx}`).files = dataTransfer.files;
+
+                const reader = new FileReader();
+                reader.onload = function (e) {
+                    document.getElementById(`itemPhotoPreviewImg_${idx}`).src = e.target.result;
+                    document.getElementById(`itemPhotoPreview_${idx}`).classList.remove('hidden');
+                };
+                reader.readAsDataURL(blob);
+
+                stopItemCamera(idx);
+                showAlert('Success', 'Item photo captured!');
+            }, 'image/jpeg', 0.85);
+        };
+
+        // Stop item camera
+        window.stopItemCamera = function (idx) {
+            if (activeItemCameraStreams[idx]) {
+                activeItemCameraStreams[idx].getTracks().forEach(track => track.stop());
+                delete activeItemCameraStreams[idx];
+            }
+
+            const video = document.getElementById(`itemCameraVideo_${idx}`);
+            if (video) video.srcObject = null;
+
+            document.getElementById(`itemCameraContainer_${idx}`).classList.add('hidden');
+            document.getElementById(`itemPhotoUploadArea_${idx}`).classList.remove('hidden');
+        };
+
+        // Preview item photo from file upload
+        window.previewItemPhoto = function (idx, event) {
+            const file = event.target.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function (e) {
+                    document.getElementById(`itemPhotoPreviewImg_${idx}`).src = e.target.result;
+                    document.getElementById(`itemPhotoPreview_${idx}`).classList.remove('hidden');
+                    document.getElementById(`itemPhotoUploadArea_${idx}`).classList.add('hidden');
+                };
+                reader.readAsDataURL(file);
+            }
+        };
+
+        // Remove item photo
+        window.removeItemPhoto = function (idx) {
+            document.getElementById(`itemPhotoInput_${idx}`).value = '';
+            document.getElementById(`itemPhotoPreviewImg_${idx}`).src = '';
+            document.getElementById(`itemPhotoPreview_${idx}`).classList.add('hidden');
+            document.getElementById(`itemPhotoUploadArea_${idx}`).classList.remove('hidden');
+        };
+
         window.removeItem = function (index) {
+            // Stop camera if active for this item
+            if (activeItemCameraStreams[index]) {
+                activeItemCameraStreams[index].getTracks().forEach(track => track.stop());
+                delete activeItemCameraStreams[index];
+            }
+
             const itemDiv = document.querySelector(`[data-item-index="${index}"]`);
             if (itemDiv) {
                 itemDiv.remove();
