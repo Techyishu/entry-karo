@@ -241,8 +241,78 @@
                 </div>
 
                 <div>
-                    <label for="item_photo" class="block text-sm font-medium text-gray-700 mb-1">Item Photo (Optional)</label>
-                    <input type="file" id="item_photo" name="item_photo" accept="image/*" class="w-full px-4 py-2 border border-gray-200 rounded-xl focus:ring-green-500 focus:border-green-500">
+                    <label class="block text-sm font-medium text-gray-700 mb-2">Item Photo (Optional)</label>
+                    
+                    <!-- Photo Preview -->
+                    <div id="itemPhotoPreview" class="hidden mb-3 relative">
+                        <img id="itemPhotoPreviewImg" src="" alt="Item Photo Preview"
+                            class="w-32 h-32 object-cover rounded-xl border-2 border-gray-200">
+                        <button type="button" onclick="removeItemPhoto()"
+                            class="absolute top-1 right-1 bg-red-500 text-white rounded-full p-1 hover:bg-red-600 shadow-lg">
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                            </svg>
+                        </button>
+                    </div>
+
+                    <!-- Camera Container -->
+                    <div id="itemCameraContainer" class="hidden mb-3">
+                        <video id="itemCameraVideo" autoplay playsinline class="w-full h-48 object-cover rounded-xl border-2 border-gray-200 bg-black"></video>
+                        <canvas id="itemCameraCanvas" class="hidden"></canvas>
+                        <div class="flex gap-2 mt-3">
+                            <button type="button" onclick="captureItemPhoto()"
+                                class="flex-1 py-2 bg-green-600 text-white rounded-xl hover:bg-green-700 font-medium flex items-center justify-center gap-2">
+                                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                        d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z"></path>
+                                    <circle cx="12" cy="13" r="3"></circle>
+                                </svg>
+                                Capture Photo
+                            </button>
+                            <button type="button" onclick="stopItemCamera()"
+                                class="px-4 py-2 bg-gray-500 text-white rounded-xl hover:bg-gray-600 font-medium">
+                                Cancel
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Photo Upload/Camera Options -->
+                    <div id="itemPhotoUploadArea" class="space-y-3">
+                        <!-- Take Photo Button -->
+                        <button type="button" onclick="startItemCamera()"
+                            class="w-full border-2 border-dashed border-blue-300 bg-blue-50 rounded-xl p-4 text-center hover:bg-blue-100 transition cursor-pointer flex items-center justify-center gap-3">
+                            <div class="w-10 h-10 rounded-full bg-blue-100 flex items-center justify-center">
+                                <svg class="w-5 h-5 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                        d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z"></path>
+                                    <circle cx="12" cy="13" r="3"></circle>
+                                </svg>
+                            </div>
+                            <div class="text-left">
+                                <p class="text-sm font-semibold text-blue-700">📷 Take Photo with Camera</p>
+                                <p class="text-xs text-blue-500">Use device camera to capture item photo</p>
+                            </div>
+                        </button>
+
+                        <!-- Upload from Gallery -->
+                        <div class="border-2 border-dashed border-gray-300 rounded-xl p-4 text-center hover:bg-gray-50 transition cursor-pointer relative">
+                            <input type="file" id="item_photo" name="item_photo" accept="image/*" capture="environment"
+                                class="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
+                                onchange="previewItemPhoto(event)">
+                            <div class="flex items-center justify-center gap-3">
+                                <div class="w-10 h-10 rounded-full bg-gray-100 flex items-center justify-center">
+                                    <svg class="w-5 h-5 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                            d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
+                                    </svg>
+                                </div>
+                                <div class="text-left">
+                                    <p class="text-sm font-medium text-gray-700">📁 Upload from Gallery</p>
+                                    <p class="text-xs text-gray-400">JPG, PNG (Max 2MB)</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
                 </div>
 
                 <button type="submit" class="w-full py-3 bg-green-600 text-white rounded-xl hover:bg-green-700 transition font-bold shadow-lg shadow-green-200">
@@ -271,6 +341,7 @@
 @push('scripts')
     <script>
         const entryId = {{ $entry->id }};
+        let itemCameraStream = null;
 
         function showAddItemModal() {
             document.getElementById('addItemModal').classList.remove('hidden');
@@ -278,6 +349,18 @@
         }
 
         function hideAddItemModal() {
+            // Stop camera if running
+            if (itemCameraStream) {
+                itemCameraStream.getTracks().forEach(track => track.stop());
+                itemCameraStream = null;
+            }
+            document.getElementById('itemCameraVideo').srcObject = null;
+            document.getElementById('itemCameraContainer').classList.add('hidden');
+            
+            // Reset photo preview
+            document.getElementById('itemPhotoPreview').classList.add('hidden');
+            document.getElementById('itemPhotoUploadArea').classList.remove('hidden');
+            
             document.getElementById('addItemModal').classList.add('hidden');
             document.getElementById('addItemForm').reset();
         }
@@ -352,6 +435,101 @@
                 showLoading(false);
             }
         });
+
+        // Camera capture for item photo
+
+        async function startItemCamera() {
+            try {
+                if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
+                    showMessage('Camera not supported in this browser. Please use file upload.', 'error');
+                    return;
+                }
+
+                const constraints = {
+                    video: {
+                        facingMode: { ideal: 'environment' },
+                        width: { ideal: 1280 },
+                        height: { ideal: 720 }
+                    }
+                };
+
+                itemCameraStream = await navigator.mediaDevices.getUserMedia(constraints);
+                document.getElementById('itemCameraVideo').srcObject = itemCameraStream;
+
+                document.getElementById('itemCameraContainer').classList.remove('hidden');
+                document.getElementById('itemPhotoUploadArea').classList.add('hidden');
+                document.getElementById('itemPhotoPreview').classList.add('hidden');
+
+            } catch (error) {
+                console.error('Camera access error:', error);
+                if (error.name === 'NotAllowedError') {
+                    showMessage('Camera access denied. Please allow camera permission.', 'error');
+                } else if (error.name === 'NotFoundError') {
+                    showMessage('No camera found. Please use file upload.', 'error');
+                } else {
+                    showMessage('Could not access camera: ' + error.message, 'error');
+                }
+            }
+        }
+
+        function captureItemPhoto() {
+            const video = document.getElementById('itemCameraVideo');
+            const canvas = document.getElementById('itemCameraCanvas');
+            const ctx = canvas.getContext('2d');
+
+            canvas.width = video.videoWidth;
+            canvas.height = video.videoHeight;
+            ctx.drawImage(video, 0, 0);
+
+            canvas.toBlob(function(blob) {
+                const file = new File([blob], 'item-photo.jpg', { type: 'image/jpeg' });
+                
+                const dataTransfer = new DataTransfer();
+                dataTransfer.items.add(file);
+                document.getElementById('item_photo').files = dataTransfer.files;
+
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    document.getElementById('itemPhotoPreviewImg').src = e.target.result;
+                    document.getElementById('itemPhotoPreview').classList.remove('hidden');
+                };
+                reader.readAsDataURL(blob);
+
+                stopItemCamera();
+                showMessage('Photo captured successfully!', 'success');
+            }, 'image/jpeg', 0.85);
+        }
+
+        function stopItemCamera() {
+            if (itemCameraStream) {
+                itemCameraStream.getTracks().forEach(track => track.stop());
+                itemCameraStream = null;
+            }
+
+            document.getElementById('itemCameraVideo').srcObject = null;
+            document.getElementById('itemCameraContainer').classList.add('hidden');
+            document.getElementById('itemPhotoUploadArea').classList.remove('hidden');
+        }
+
+        function previewItemPhoto(event) {
+            const file = event.target.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    document.getElementById('itemPhotoPreviewImg').src = e.target.result;
+                    document.getElementById('itemPhotoPreview').classList.remove('hidden');
+                    document.getElementById('itemPhotoUploadArea').classList.add('hidden');
+                };
+                reader.readAsDataURL(file);
+            }
+        }
+
+        function removeItemPhoto() {
+            document.getElementById('item_photo').value = '';
+            document.getElementById('itemPhotoPreviewImg').src = '';
+            document.getElementById('itemPhotoPreview').classList.add('hidden');
+            document.getElementById('itemPhotoUploadArea').classList.remove('hidden');
+        }
 
         function showMessage(text, type) {
             const container = document.getElementById('messageContainer');
