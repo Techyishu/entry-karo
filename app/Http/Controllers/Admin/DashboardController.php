@@ -59,26 +59,45 @@ class DashboardController extends Controller
     /**
      * Show all visitors.
      */
-    public function visitors()
+    public function visitors(Request $request)
     {
-        $visitors = Visitor::latest()->paginate(20);
+        $query = Visitor::query();
+
+        if ($search = $request->input('search')) {
+            $query->where(function ($q) use ($search) {
+                $q->where('name', 'like', "%{$search}%")
+                    ->orWhere('mobile_number', 'like', "%{$search}%")
+                    ->orWhere('address', 'like', "%{$search}%")
+                    ->orWhere('purpose', 'like', "%{$search}%")
+                    ->orWhere('vehicle_number', 'like', "%{$search}%");
+            });
+        }
+
+        $visitors = $query->latest()->paginate(20)->appends($request->query());
         return view('admin.visitors', compact('visitors'));
     }
 
     /**
      * Show all customers.
      */
-    public function customers()
+    public function customers(Request $request)
     {
-        $customers = User::where('role', 'customer')
+        $query = User::where('role', 'customer')
             ->with([
-                'subscriptions' => function ($query) {
-                    $query->with('plan')->latest();
+                'subscriptions' => function ($q) {
+                    $q->with('plan')->latest();
                 },
                 'guards'
-            ])
-            ->latest()
-            ->paginate(20);
+            ]);
+
+        if ($search = $request->input('search')) {
+            $query->where(function ($q) use ($search) {
+                $q->where('name', 'like', "%{$search}%")
+                    ->orWhere('email', 'like', "%{$search}%");
+            });
+        }
+
+        $customers = $query->latest()->paginate(20)->appends($request->query());
 
         $subscriptionPlans = \App\Models\SubscriptionPlan::where('is_active', true)->get();
 
@@ -88,20 +107,41 @@ class DashboardController extends Controller
     /**
      * Show all guards.
      */
-    public function guards()
+    public function guards(Request $request)
     {
-        $guards = User::where('role', 'guard')->latest()->paginate(20);
+        $query = User::where('role', 'guard');
+
+        if ($search = $request->input('search')) {
+            $query->where(function ($q) use ($search) {
+                $q->where('name', 'like', "%{$search}%")
+                    ->orWhere('email', 'like', "%{$search}%");
+            });
+        }
+
+        $guards = $query->latest()->paginate(20)->appends($request->query());
         return view('admin.guards', compact('guards'));
     }
 
     /**
      * Show all entries.
      */
-    public function entries()
+    public function entries(Request $request)
     {
-        $entries = Entry::with(['visitor', 'guardUser', 'carryItems'])
-            ->latest('in_time')
-            ->paginate(20);
+        $query = Entry::with(['visitor', 'guardUser', 'carryItems']);
+
+        if ($search = $request->input('search')) {
+            $query->where(function ($q) use ($search) {
+                $q->whereHas('visitor', function ($vq) use ($search) {
+                    $vq->where('name', 'like', "%{$search}%")
+                        ->orWhere('mobile_number', 'like', "%{$search}%");
+                })
+                    ->orWhereHas('guardUser', function ($gq) use ($search) {
+                        $gq->where('name', 'like', "%{$search}%");
+                    });
+            });
+        }
+
+        $entries = $query->latest('in_time')->paginate(20)->appends($request->query());
         return view('admin.entries', compact('entries'));
     }
 

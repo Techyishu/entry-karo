@@ -304,7 +304,7 @@
                     <div
                         class="w-20 h-20 mx-auto bg-green-600 rounded-full flex items-center justify-center text-2xl font-bold shadow-lg shadow-green-900/50 mb-6 border-4 border-slate-800">
                         1</div>
-                    <h3 class="text-xl font-bold mb-3">Guard enters number</h3>
+                    <h3 class="text-xl font-bold mb-3">Guard Enters Number</h3>
                     <p class="text-slate-400">Security guard asks for mobile number and types it in.</p>
                 </div>
                 <!-- Step 2 -->
@@ -410,7 +410,7 @@
                 </div>
             </div>
 
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-4xl mx-auto">
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-5xl mx-auto">
                 <!-- BASIC -->
                 <div
                     class="bg-white rounded-2xl p-8 border border-slate-200 shadow-sm hover:border-green-300 hover:shadow-lg transition relative">
@@ -429,7 +429,7 @@
                                 stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                     d="M5 13l4 4L19 7"></path>
-                            </svg>500 Entries per month</li>
+                            </svg>300 Entries Per Month</li>
                         <li class="flex items-center"><svg class="w-5 h-5 text-green-500 mr-2" fill="none"
                                 stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
@@ -449,15 +449,10 @@
                         POPULAR</div>
                     <h3 class="text-xl font-bold text-slate-900">PRO</h3>
                     <div class="mt-4 mb-6">
-                        <span class="text-4xl font-extrabold text-green-600">₹199</span>
+                        <span class="text-4xl font-extrabold text-green-600">₹299</span>
                         <span class="text-slate-500">/month</span>
                     </div>
                     <ul class="space-y-4 mb-8 text-slate-700 font-medium">
-                        <li class="flex items-center"><svg class="w-5 h-5 text-green-500 mr-2" fill="none"
-                                stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                    d="M5 13l4 4L19 7"></path>
-                            </svg>Unlimited Visitors</li>
                         <li class="flex items-center"><svg class="w-5 h-5 text-green-500 mr-2" fill="none"
                                 stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
@@ -467,7 +462,17 @@
                                 stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                     d="M5 13l4 4L19 7"></path>
-                            </svg>Multiple Gates</li>
+                            </svg>1000 Entries Per Month</li>
+                        <li class="flex items-center"><svg class="w-5 h-5 text-green-500 mr-2" fill="none"
+                                stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M5 13l4 4L19 7"></path>
+                            </svg>2 Guards</li>
+                        <li class="flex items-center"><svg class="w-5 h-5 text-green-500 mr-2" fill="none"
+                                stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M5 13l4 4L19 7"></path>
+                            </svg>2 Gate/Guard Login</li>
                         <li class="flex items-center"><svg class="w-5 h-5 text-green-500 mr-2" fill="none"
                                 stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
@@ -476,6 +481,54 @@
                     </ul>
                     <button onclick="document.getElementById('contact').scrollIntoView()"
                         class="w-full bg-green-600 text-white font-bold py-3 rounded-xl hover:bg-green-700 transition shadow-lg shadow-green-200">Contact
+                        Us</button>
+                </div>
+
+                <!-- ENTERPRISE -->
+                <div
+                    class="bg-gradient-to-br from-slate-900 to-slate-800 rounded-2xl p-8 border border-slate-700 shadow-xl relative text-white">
+                    <div
+                        class="absolute top-0 right-0 bg-amber-500 text-white text-xs font-bold px-3 py-1 rounded-bl-lg rounded-tr-lg">
+                        BEST VALUE</div>
+                    <h3 class="text-xl font-bold text-white">ENTERPRISE</h3>
+                    <div class="mt-4 mb-6">
+                        <span class="text-4xl font-extrabold text-amber-400">₹499</span>
+                        <span class="text-slate-400">/month</span>
+                    </div>
+                    <ul class="space-y-4 mb-8 text-slate-300 font-medium">
+                        <li class="flex items-center"><svg class="w-5 h-5 text-amber-400 mr-2" fill="none"
+                                stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M5 13l4 4L19 7"></path>
+                            </svg>Unlimited History</li>
+                        <li class="flex items-center"><svg class="w-5 h-5 text-amber-400 mr-2" fill="none"
+                                stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M5 13l4 4L19 7"></path>
+                            </svg>Unlimited Entries</li>
+                        <li class="flex items-center"><svg class="w-5 h-5 text-amber-400 mr-2" fill="none"
+                                stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M5 13l4 4L19 7"></path>
+                            </svg>Unlimited Guards</li>
+                        <li class="flex items-center"><svg class="w-5 h-5 text-amber-400 mr-2" fill="none"
+                                stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M5 13l4 4L19 7"></path>
+                            </svg>Unlimited Gate Logins</li>
+                        <li class="flex items-center"><svg class="w-5 h-5 text-amber-400 mr-2" fill="none"
+                                stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M5 13l4 4L19 7"></path>
+                            </svg>Unlimited Visitors</li>
+                        <li class="flex items-center"><svg class="w-5 h-5 text-amber-400 mr-2" fill="none"
+                                stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M5 13l4 4L19 7"></path>
+                            </svg>Priority Support</li>
+                    </ul>
+                    <button onclick="document.getElementById('contact').scrollIntoView()"
+                        class="w-full bg-amber-500 text-white font-bold py-3 rounded-xl hover:bg-amber-600 transition shadow-lg shadow-amber-900/30">Contact
                         Us</button>
                 </div>
             </div>
