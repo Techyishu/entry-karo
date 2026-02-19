@@ -436,9 +436,9 @@
                                     d="M5 13l4 4L19 7"></path>
                             </svg>1 Gate/Guard Login</li>
                     </ul>
-                    <button onclick="document.getElementById('contact').scrollIntoView()"
-                        class="w-full bg-slate-100 text-slate-800 font-bold py-3 rounded-xl hover:bg-slate-200 transition">Contact
-                        Us</button>
+                    <a href="{{ route('register') }}"
+                        class="block w-full text-center bg-slate-100 text-slate-800 font-bold py-3 rounded-xl hover:bg-slate-200 transition">Register
+                        Now</a>
                 </div>
 
                 <!-- PRO -->
@@ -479,9 +479,9 @@
                                     d="M5 13l4 4L19 7"></path>
                             </svg>Priority Support</li>
                     </ul>
-                    <button onclick="document.getElementById('contact').scrollIntoView()"
-                        class="w-full bg-green-600 text-white font-bold py-3 rounded-xl hover:bg-green-700 transition shadow-lg shadow-green-200">Contact
-                        Us</button>
+                    <a href="{{ route('register') }}"
+                        class="block w-full text-center bg-green-600 text-white font-bold py-3 rounded-xl hover:bg-green-700 transition shadow-lg shadow-green-200">Register
+                        Now</a>
                 </div>
 
                 <!-- ENTERPRISE -->
@@ -527,9 +527,9 @@
                                     d="M5 13l4 4L19 7"></path>
                             </svg>Priority Support</li>
                     </ul>
-                    <button onclick="document.getElementById('contact').scrollIntoView()"
-                        class="w-full bg-amber-500 text-white font-bold py-3 rounded-xl hover:bg-amber-600 transition shadow-lg shadow-amber-900/30">Contact
-                        Us</button>
+                    <a href="{{ route('register') }}"
+                        class="block w-full text-center bg-amber-500 text-white font-bold py-3 rounded-xl hover:bg-amber-600 transition shadow-lg shadow-amber-900/30">Register
+                        Now</a>
                 </div>
             </div>
         </div>
@@ -594,29 +594,21 @@
         </div>
     </section>
 
-    <!-- 8. FINAL CTA & CONTACT -->
-    <section id="contact" class="py-20 bg-green-900 text-white text-center px-4">
+    <!-- 8. FINAL CTA -->
+    <section id="contact" class="py-24 bg-green-900 text-white text-center px-4">
         <div class="max-w-4xl mx-auto">
             <h2 class="text-4xl md:text-5xl font-bold mb-6">Replace Your Paper Register Today</h2>
             <p class="text-green-200 text-xl mb-10 max-w-2xl mx-auto">Join hundreds of societies and factories upgrading
                 to digital entry.</p>
-            <div class="bg-white rounded-xl p-8 max-w-lg mx-auto shadow-2xl">
-                <h3 class="text-slate-800 text-2xl font-bold mb-6">Start Using ENTRYKARO</h3>
-                <form class="space-y-4"
-                    onsubmit="event.preventDefault(); alert('Thank you! We will contact you shortly.');">
-                    <div>
-                        <label class="block text-left text-slate-600 text-sm font-bold mb-2">Your Mobile Number</label>
-                        <input type="tel" placeholder="98765 43210"
-                            class="w-full px-4 py-3 rounded-lg border border-slate-300 text-slate-900 focus:ring-2 focus:ring-green-500 focus:outline-none"
-                            required>
-                    </div>
-                    <button type="submit"
-                        class="w-full bg-green-600 hover:bg-green-700 text-white font-bold py-3 rounded-lg transition text-lg">
-                        Get Demo
-                    </button>
-                    <p class="text-xs text-slate-400 mt-4">We'll assume this is for a Demo request.</p>
-                </form>
-            </div>
+            <a href="{{ route('register') }}"
+                class="inline-flex items-center justify-center px-10 py-4 text-lg font-bold rounded-full bg-white text-green-900 hover:bg-green-50 transition transform hover:-translate-y-0.5 shadow-2xl shadow-green-950/40">
+                Register Now — It's Free to Start
+                <svg class="w-5 h-5 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7l5 5m0 0l-5 5m5-5H6">
+                    </path>
+                </svg>
+            </a>
+            <p class="text-green-300/70 text-sm mt-6">No credit card required. Set up in under 2 minutes.</p>
         </div>
     </section>
 
