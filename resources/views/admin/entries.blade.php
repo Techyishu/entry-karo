@@ -19,7 +19,7 @@
 
             <!-- Search Bar -->
             <div class="mb-6">
-                <form action="{{ route('admin.entries') }}" method="GET" class="flex gap-3">
+                <form action="{{ route('admin.entries.index') }}" method="GET" class="flex gap-3">
                     <div class="relative flex-1">
                         <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
                             <svg class="h-5 w-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -36,7 +36,7 @@
                         Search
                     </button>
                     @if(request('search'))
-                        <a href="{{ route('admin.entries') }}"
+                        <a href="{{ route('admin.entries.index') }}"
                             class="px-5 py-2.5 bg-gray-200 text-gray-700 text-sm font-medium rounded-lg hover:bg-gray-300 shadow-sm transition">
                             Clear
                         </a>
