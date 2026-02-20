@@ -21,6 +21,8 @@ class SubscriptionPlan extends Model
         'price',
         'description',
         'max_guards',
+        'max_entries',
+        'max_gate_logins',
         'is_active',
     ];
 
@@ -34,6 +36,8 @@ class SubscriptionPlan extends Model
         return [
             'price' => 'decimal:2',
             'max_guards' => 'integer',
+            'max_entries' => 'integer',
+            'max_gate_logins' => 'integer',
             'is_active' => 'boolean',
         ];
     }
@@ -63,10 +67,50 @@ class SubscriptionPlan extends Model
     }
 
     /**
+     * Check if plan has unlimited entries.
+     */
+    public function hasUnlimitedEntries(): bool
+    {
+        return is_null($this->max_entries);
+    }
+
+    /**
+     * Check if plan has unlimited gate logins.
+     */
+    public function hasUnlimitedGateLogins(): bool
+    {
+        return is_null($this->max_gate_logins);
+    }
+
+    /**
      * Get formatted price.
      */
     public function getFormattedPriceAttribute(): string
     {
         return '₹' . number_format((float) $this->price, 2);
+    }
+
+    /**
+     * Get entries display text.
+     */
+    public function getEntriesDisplayAttribute(): string
+    {
+        return $this->hasUnlimitedEntries() ? 'Unlimited' : number_format($this->max_entries);
+    }
+
+    /**
+     * Get guards display text.
+     */
+    public function getGuardsDisplayAttribute(): string
+    {
+        return $this->hasUnlimitedGuards() ? 'Unlimited' : number_format($this->max_guards);
+    }
+
+    /**
+     * Get gate logins display text.
+     */
+    public function getGateLoginsDisplayAttribute(): string
+    {
+        return $this->hasUnlimitedGateLogins() ? 'Unlimited' : number_format($this->max_gate_logins);
     }
 }

@@ -74,7 +74,7 @@
                                                 {{ ucfirst($subscription->status) }}
                                             </span>
                                         </div>
-                                        <div class="mt-2 grid grid-cols-2 md:grid-cols-4 gap-4 text-sm">
+                                        <div class="mt-2 grid grid-cols-2 md:grid-cols-5 gap-4 text-sm">
                                             <div>
                                                 <p class="text-gray-600">Amount</p>
                                                 <p class="font-medium text-gray-900">₹{{ number_format($subscription->amount, 2) }}
@@ -93,6 +93,14 @@
                                                 <p class="text-gray-600">Next Billing</p>
                                                 <p class="font-medium text-gray-900">
                                                     {{ $subscription->next_billing_date ? $subscription->next_billing_date->format('M d, Y') : 'N/A' }}
+                                                </p>
+                                            </div>
+                                            <div>
+                                                <p class="text-gray-600">Plan Limits</p>
+                                                <p class="font-medium text-gray-900 text-xs">
+                                                    {{ $subscription->plan->entries_display }} entries •
+                                                    {{ $subscription->plan->guards_display }} guards •
+                                                    {{ $subscription->plan->gate_logins_display }} logins
                                                 </p>
                                             </div>
                                         </div>
@@ -163,53 +171,117 @@
     <!-- Assign Subscription Modal -->
     <div id="assignSubscriptionModal"
         class="hidden fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full z-50">
-        <div class="relative top-20 mx-auto p-5 border w-96 shadow-lg rounded-md bg-white">
-            <div class="mt-3">
-                <h3 class="text-lg font-medium text-gray-900 mb-4">Assign Subscription</h3>
-                <form action="{{ route('admin.subscription.assign', $customer) }}" method="POST">
-                    @csrf
-                    <div class="space-y-4">
-                        <div>
-                            <label class="block text-sm font-medium text-gray-700 mb-2">Subscription Plan</label>
-                            <select name="subscription_plan_id" required
-                                class="w-full border-gray-300 rounded-md shadow-sm focus:border-blue-500 focus:ring-blue-500">
-                                @foreach($subscriptionPlans as $plan)
-                                    <option value="{{ $plan->id }}">{{ $plan->name }} - ₹{{ number_format($plan->price, 2) }}
-                                    </option>
-                                @endforeach
-                            </select>
-                        </div>
-                        <div>
-                            <label class="block text-sm font-medium text-gray-700 mb-2">Start Date</label>
-                            <input type="date" name="start_date" required value="{{ date('Y-m-d') }}"
-                                class="w-full border-gray-300 rounded-md shadow-sm focus:border-blue-500 focus:ring-blue-500">
-                        </div>
-                        <div>
-                            <label class="block text-sm font-medium text-gray-700 mb-2">Billing Cycle</label>
-                            <select name="billing_cycle" required
-                                class="w-full border-gray-300 rounded-md shadow-sm focus:border-blue-500 focus:ring-blue-500">
-                                <option value="monthly">Monthly</option>
-                                <option value="yearly">Yearly (10% discount)</option>
-                            </select>
-                        </div>
-                        <div>
-                            <label class="block text-sm font-medium text-gray-700 mb-2">Notes (Optional)</label>
-                            <textarea name="notes" rows="3"
-                                class="w-full border-gray-300 rounded-md shadow-sm focus:border-blue-500 focus:ring-blue-500"></textarea>
-                        </div>
-                    </div>
-                    <div class="mt-6 flex justify-end gap-3">
-                        <button type="button"
-                            onclick="document.getElementById('assignSubscriptionModal').classList.add('hidden')"
-                            class="px-4 py-2 bg-gray-300 text-gray-700 rounded-md hover:bg-gray-400">
-                            Cancel
-                        </button>
-                        <button type="submit" class="px-4 py-2 bg-green-600 text-white rounded-md hover:bg-green-700">
-                            Assign Subscription
-                        </button>
-                    </div>
-                </form>
+        <div class="relative top-10 mx-auto p-6 border max-w-4xl shadow-2xl rounded-xl bg-white">
+            <div class="flex justify-between items-center mb-6">
+                <h3 class="text-xl font-bold text-gray-900">Assign Subscription Plan</h3>
+                <button type="button"
+                    onclick="document.getElementById('assignSubscriptionModal').classList.add('hidden')"
+                    class="text-gray-400 hover:text-gray-600 text-2xl leading-none">&times;</button>
             </div>
+
+            <form action="{{ route('admin.subscription.assign', $customer) }}" method="POST">
+                @csrf
+
+                <!-- Plan Cards -->
+                <label class="block text-sm font-medium text-gray-700 mb-3">Choose a Plan</label>
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
+                    @foreach($subscriptionPlans as $index => $plan)
+                        <label class="cursor-pointer">
+                            <input type="radio" name="subscription_plan_id" value="{{ $plan->id }}"
+                                class="hidden peer" {{ $index === 0 ? 'checked' : '' }} required>
+                            <div class="rounded-xl p-5 border-2 transition-all
+                                {{ $plan->slug === 'enterprise' ? 'bg-gradient-to-br from-slate-900 to-slate-800 text-white border-slate-700' : 'bg-white border-gray-200' }}
+                                peer-checked:border-green-500 peer-checked:shadow-lg peer-checked:ring-2 peer-checked:ring-green-200
+                                hover:shadow-md">
+
+                                {{-- Plan badge --}}
+                                @if($plan->slug === 'pro')
+                                    <span class="inline-block bg-green-100 text-green-700 text-xs font-bold px-2 py-0.5 rounded-full mb-2">POPULAR</span>
+                                @elseif($plan->slug === 'enterprise')
+                                    <span class="inline-block bg-amber-500 text-white text-xs font-bold px-2 py-0.5 rounded-full mb-2">BEST VALUE</span>
+                                @endif
+
+                                <h4 class="text-lg font-bold {{ $plan->slug === 'enterprise' ? 'text-white' : 'text-gray-900' }}">{{ $plan->name }}</h4>
+
+                                <div class="mt-2 mb-4">
+                                    <span class="text-3xl font-extrabold {{ $plan->slug === 'enterprise' ? 'text-amber-400' : ($plan->slug === 'pro' ? 'text-green-600' : 'text-gray-900') }}">
+                                        ₹{{ number_format($plan->price) }}
+                                    </span>
+                                    <span class="{{ $plan->slug === 'enterprise' ? 'text-slate-400' : 'text-gray-500' }} text-sm">/month</span>
+                                </div>
+
+                                <ul class="space-y-2 text-sm {{ $plan->slug === 'enterprise' ? 'text-slate-300' : 'text-gray-600' }}">
+                                    <li class="flex items-center gap-2">
+                                        <svg class="w-4 h-4 flex-shrink-0 {{ $plan->slug === 'enterprise' ? 'text-amber-400' : 'text-green-500' }}" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+                                        </svg>
+                                        {{ $plan->entries_display }} Entries/Month
+                                    </li>
+                                    <li class="flex items-center gap-2">
+                                        <svg class="w-4 h-4 flex-shrink-0 {{ $plan->slug === 'enterprise' ? 'text-amber-400' : 'text-green-500' }}" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+                                        </svg>
+                                        {{ $plan->guards_display }} Guards
+                                    </li>
+                                    <li class="flex items-center gap-2">
+                                        <svg class="w-4 h-4 flex-shrink-0 {{ $plan->slug === 'enterprise' ? 'text-amber-400' : 'text-green-500' }}" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+                                        </svg>
+                                        {{ $plan->gate_logins_display }} Gate Logins
+                                    </li>
+                                    @if($plan->slug === 'pro' || $plan->slug === 'enterprise')
+                                        <li class="flex items-center gap-2">
+                                            <svg class="w-4 h-4 flex-shrink-0 {{ $plan->slug === 'enterprise' ? 'text-amber-400' : 'text-green-500' }}" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+                                            </svg>
+                                            Priority Support
+                                        </li>
+                                    @endif
+                                </ul>
+
+                                {{-- Selection indicator --}}
+                                <div class="mt-4 text-center">
+                                    <span class="hidden peer-checked:inline-block text-green-600 font-semibold text-sm">✓ Selected</span>
+                                </div>
+                            </div>
+                        </label>
+                    @endforeach
+                </div>
+
+                <!-- Other fields -->
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">Start Date</label>
+                        <input type="date" name="start_date" required value="{{ date('Y-m-d') }}"
+                            class="w-full border-gray-300 rounded-md shadow-sm focus:border-green-500 focus:ring-green-500">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">Billing Cycle</label>
+                        <select name="billing_cycle" required
+                            class="w-full border-gray-300 rounded-md shadow-sm focus:border-green-500 focus:ring-green-500">
+                            <option value="monthly">Monthly</option>
+                            <option value="yearly">Yearly (10% discount)</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">Notes (Optional)</label>
+                        <input type="text" name="notes" placeholder="Any notes..."
+                            class="w-full border-gray-300 rounded-md shadow-sm focus:border-green-500 focus:ring-green-500">
+                    </div>
+                </div>
+
+                <div class="mt-6 flex justify-end gap-3 border-t pt-4">
+                    <button type="button"
+                        onclick="document.getElementById('assignSubscriptionModal').classList.add('hidden')"
+                        class="px-5 py-2.5 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 font-medium transition">
+                        Cancel
+                    </button>
+                    <button type="submit"
+                        class="px-5 py-2.5 bg-green-600 text-white rounded-lg hover:bg-green-700 font-medium transition shadow-sm">
+                        Assign Subscription
+                    </button>
+                </div>
+            </form>
         </div>
     </div>
 @endsection
