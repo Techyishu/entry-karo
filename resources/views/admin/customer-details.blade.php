@@ -29,6 +29,25 @@
                 </div>
             @endif
 
+            <!-- Customer Information -->
+            <div class="bg-white rounded-lg shadow-sm p-6 mb-8">
+                <h2 class="text-xl font-semibold text-gray-900 mb-4">👤 Customer Information</h2>
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-4 text-sm">
+                    <div>
+                        <p class="text-gray-500 font-medium">Name</p>
+                        <p class="text-gray-900 font-semibold mt-1">{{ $customer->name }}</p>
+                    </div>
+                    <div>
+                        <p class="text-gray-500 font-medium">Email</p>
+                        <p class="text-gray-900 font-semibold mt-1">{{ $customer->email }}</p>
+                    </div>
+                    <div>
+                        <p class="text-gray-500 font-medium">Mobile Number</p>
+                        <p class="text-gray-900 font-semibold mt-1">{{ $customer->mobile_number ?? 'Not provided' }}</p>
+                    </div>
+                </div>
+            </div>
+
             <!-- Overview Cards -->
             <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
                 <div class="bg-white rounded-lg shadow-sm p-6">
